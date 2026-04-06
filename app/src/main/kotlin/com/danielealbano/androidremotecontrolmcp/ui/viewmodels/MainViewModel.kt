@@ -84,6 +84,9 @@ class MainViewModel
         private val _isMicrophonePermissionGranted = MutableStateFlow(false)
         val isMicrophonePermissionGranted: StateFlow<Boolean> = _isMicrophonePermissionGranted.asStateFlow()
 
+        private val _isLocationPermissionGranted = MutableStateFlow(false)
+        val isLocationPermissionGranted: StateFlow<Boolean> = _isLocationPermissionGranted.asStateFlow()
+
         private val _isNotificationListenerEnabled = MutableStateFlow(false)
         val isNotificationListenerEnabled: StateFlow<Boolean> = _isNotificationListenerEnabled.asStateFlow()
 
@@ -278,6 +281,8 @@ class MainViewModel
                 PermissionUtils.isCameraPermissionGranted(context)
             _isMicrophonePermissionGranted.value =
                 PermissionUtils.isMicrophonePermissionGranted(context)
+            _isLocationPermissionGranted.value =
+                PermissionUtils.isLocationPermissionGranted(context)
             _isNotificationListenerEnabled.value =
                 PermissionUtils.isNotificationListenerEnabled(
                     context,

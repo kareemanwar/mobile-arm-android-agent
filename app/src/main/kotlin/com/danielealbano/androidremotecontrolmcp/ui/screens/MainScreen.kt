@@ -30,6 +30,7 @@ fun MainScreen(
     onRequestNotificationPermission: () -> Unit,
     onRequestCameraPermission: () -> Unit,
     onRequestMicrophonePermission: () -> Unit,
+    onRequestLocationPermission: () -> Unit,
     viewModel: MainViewModel = hiltViewModel(),
 ) {
     var selectedTabRoute by rememberSaveable { mutableStateOf(TopLevelRoute.Server.route) }
@@ -70,6 +71,7 @@ fun MainScreen(
                     onRequestNotificationPermission = onRequestNotificationPermission,
                     onRequestCameraPermission = onRequestCameraPermission,
                     onRequestMicrophonePermission = onRequestMicrophonePermission,
+                    onRequestLocationPermission = onRequestLocationPermission,
                     pendingRoute = pendingSettingsRoute,
                     onPendingRouteConsumed = { pendingSettingsRoute = null },
                     modifier = Modifier.padding(paddingValues),

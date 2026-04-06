@@ -615,13 +615,13 @@ ToolCategory(
 
 ### Acceptance Criteria
 
-- [ ] `isLocationPermissionGranted` function added to `PermissionUtils`
-- [ ] `isLocationPermissionGranted` StateFlow added to `MainViewModel`
-- [ ] `refreshPermissionStatus` checks location permission
-- [ ] Location permission row added to `PermissionsSettingsScreen`
-- [ ] `onRequestLocationPermission` callback plumbed from `MainActivity` through `MainScreen` and `SettingsScreen`
-- [ ] Location permission launcher registered in `MainActivity`
-- [ ] String resource `permission_location` added to `strings.xml`
+- [x] `isLocationPermissionGranted` function added to `PermissionUtils`
+- [x] `isLocationPermissionGranted` StateFlow added to `MainViewModel`
+- [x] `refreshPermissionStatus` checks location permission
+- [x] Location permission row added to `PermissionsSettingsScreen`
+- [x] `onRequestLocationPermission` callback plumbed from `MainActivity` through `MainScreen` and `SettingsScreen`
+- [x] Location permission launcher registered in `MainActivity`
+- [x] String resource `permission_location` added to `strings.xml`
 
 ---
 
@@ -641,7 +641,7 @@ fun isLocationPermissionGranted(context: Context): Boolean =
 
 **Definition of Done**:
 
-- [ ] `isLocationPermissionGranted` function added to `PermissionUtils`
+- [x] `isLocationPermissionGranted` function added to `PermissionUtils`
 
 ---
 
@@ -665,8 +665,8 @@ _isLocationPermissionGranted.value =
 
 **Definition of Done**:
 
-- [ ] `isLocationPermissionGranted` StateFlow exposed from ViewModel
-- [ ] `refreshPermissionStatus` updates it
+- [x] `isLocationPermissionGranted` StateFlow exposed from ViewModel
+- [x] `refreshPermissionStatus` updates it
 
 ---
 
@@ -703,9 +703,9 @@ PermissionRow(
 
 **Definition of Done**:
 
-- [ ] Location permission row displays in Permissions settings
-- [ ] Shows granted/not-granted status
-- [ ] Grant button triggers permission request callback
+- [x] Location permission row displays in Permissions settings
+- [x] Shows granted/not-granted status
+- [x] Grant button triggers permission request callback
 
 ---
 
@@ -721,7 +721,7 @@ Add after `permission_notification_listener`:
 
 **Definition of Done**:
 
-- [ ] `permission_location` string resource exists
+- [x] `permission_location` string resource exists
 
 ---
 
@@ -775,9 +775,9 @@ Add `onRequestLocationPermission: () -> Unit` parameter to `SettingsScreen` comp
 
 **Definition of Done**:
 
-- [ ] `locationPermissionLauncher` registered in `MainActivity`
-- [ ] `requestLocationPermission` method launches `ACCESS_FINE_LOCATION`
-- [ ] Callback plumbed through `MainScreen` → `SettingsScreen` → `PermissionsSettingsScreen`
+- [x] `locationPermissionLauncher` registered in `MainActivity`
+- [x] `requestLocationPermission` method launches `ACCESS_FINE_LOCATION`
+- [x] Callback plumbed through `MainScreen` → `SettingsScreen` → `PermissionsSettingsScreen`
 
 ---
 
