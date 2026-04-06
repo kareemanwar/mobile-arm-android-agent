@@ -787,11 +787,11 @@ Add `onRequestLocationPermission: () -> Unit` parameter to `SettingsScreen` comp
 
 ### Acceptance Criteria
 
-- [ ] `MockDependencies` includes `locationProvider: LocationProvider`
-- [ ] `createMockDependencies()` mocks `LocationProvider`
-- [ ] `registerAllTools()` calls `registerLocationTools()`
-- [ ] Integration tests cover: success (last known), success (fresh fix), permission denied, Play Services unavailable, no location available, Geocoder failure (street null), `fresh_fix` param disabled by user
-- [ ] Import for `registerLocationTools` added to helper
+- [x] `MockDependencies` includes `locationProvider: LocationProvider`
+- [x] `createMockDependencies()` mocks `LocationProvider`
+- [x] `registerAllTools()` calls `registerLocationTools()`
+- [x] Integration tests cover: success (last known), success (fresh fix), permission denied, Play Services unavailable, no location available, Geocoder failure (street null), `fresh_fix` param disabled by user
+- [x] Import for `registerLocationTools` added to helper
 
 ---
 
@@ -817,9 +817,9 @@ Add import for `registerLocationTools` and `LocationProvider`.
 
 **Definition of Done**:
 
-- [ ] `MockDependencies` has `locationProvider` field
-- [ ] `createMockDependencies` creates mock for it
-- [ ] `registerAllTools` calls `registerLocationTools`
+- [x] `MockDependencies` has `locationProvider` field
+- [x] `createMockDependencies` creates mock for it
+- [x] `registerAllTools` calls `registerLocationTools`
 
 ---
 
@@ -842,7 +842,7 @@ Add import for `registerLocationTools` and `LocationProvider`.
 
 **Definition of Done**:
 
-- [ ] All 8 integration tests implemented and passing
+- [x] All 8 integration tests implemented and passing
 
 ---
 
