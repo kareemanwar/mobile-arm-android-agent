@@ -20,6 +20,8 @@ import com.danielealbano.androidremotecontrolmcp.services.camera.CameraProvider
 import com.danielealbano.androidremotecontrolmcp.services.camera.CameraProviderImpl
 import com.danielealbano.androidremotecontrolmcp.services.intents.IntentDispatcher
 import com.danielealbano.androidremotecontrolmcp.services.intents.IntentDispatcherImpl
+import com.danielealbano.androidremotecontrolmcp.services.location.LocationProvider
+import com.danielealbano.androidremotecontrolmcp.services.location.LocationProviderImpl
 import com.danielealbano.androidremotecontrolmcp.services.notifications.NotificationProvider
 import com.danielealbano.androidremotecontrolmcp.services.notifications.NotificationProviderImpl
 import com.danielealbano.androidremotecontrolmcp.services.screencapture.ApiLevelProvider
@@ -150,4 +152,8 @@ abstract class ServiceModule {
     @Binds
     @Singleton
     abstract fun bindPermissionChecker(impl: PermissionCheckerImpl): PermissionChecker
+
+    @Binds
+    @Singleton
+    abstract fun bindLocationProvider(impl: LocationProviderImpl): LocationProvider
 }

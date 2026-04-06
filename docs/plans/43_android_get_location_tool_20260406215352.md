@@ -90,15 +90,15 @@ Add after the existing `<uses-feature>` declarations:
 
 ### Acceptance Criteria
 
-- [ ] `LocationProvider` interface created with `getLocation(freshFix: Boolean): Result<LocationData>` method
-- [ ] `LocationData` data class created with `latitude: Double`, `longitude: Double`, `accuracyMeters: Float`, `street: String?`
-- [ ] `LocationProviderImpl` created using `FusedLocationProviderClient`
-- [ ] Play Services availability checked on invocation via `GoogleApiAvailability`
-- [ ] Location permission checked on invocation
-- [ ] `freshFix=false` returns last known location; `freshFix=true` requests a fresh fix with 10-second timeout
-- [ ] `Geocoder` used for reverse geocoding; failure is non-fatal (street returns `null`)
-- [ ] Hilt binding added in `ServiceModule` (in `AppModule.kt`)
-- [ ] Injected into `McpServerService`
+- [x] `LocationProvider` interface created with `getLocation(freshFix: Boolean): Result<LocationData>` method
+- [x] `LocationData` data class created with `latitude: Double`, `longitude: Double`, `accuracyMeters: Float`, `street: String?`
+- [x] `LocationProviderImpl` created using `FusedLocationProviderClient`
+- [x] Play Services availability checked on invocation via `GoogleApiAvailability`
+- [x] Location permission checked on invocation
+- [x] `freshFix=false` returns last known location; `freshFix=true` requests a fresh fix with 10-second timeout
+- [x] `Geocoder` used for reverse geocoding; failure is non-fatal (street returns `null`)
+- [x] Hilt binding added in `ServiceModule` (in `AppModule.kt`)
+- [x] Injected into `McpServerService`
 
 ---
 
@@ -119,7 +119,7 @@ data class LocationData(
 
 **Definition of Done**:
 
-- [ ] `LocationData` data class exists with all four fields
+- [x] `LocationData` data class exists with all four fields
 
 ---
 
@@ -157,7 +157,7 @@ interface LocationProvider {
 
 **Definition of Done**:
 
-- [ ] `LocationProvider` interface exists with `getLocation` method and companion constants
+- [x] `LocationProvider` interface exists with `getLocation` method and companion constants
 
 ---
 
@@ -371,7 +371,7 @@ class LocationProviderImpl
 
 **Definition of Done**:
 
-- [ ] `LocationProviderImpl` created matching the code above
+- [x] `LocationProviderImpl` created matching the code above
 
 ---
 
@@ -403,8 +403,8 @@ Note: The `registerLocationTools()` call in `registerAllTools()` is added in Tas
 
 **Definition of Done**:
 
-- [ ] Hilt `@Binds` for `LocationProvider` added to `ServiceModule`
-- [ ] `locationProvider` injected into `McpServerService`
+- [x] Hilt `@Binds` for `LocationProvider` added to `ServiceModule`
+- [x] `locationProvider` injected into `McpServerService`
 
 ---
 
