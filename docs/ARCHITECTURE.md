@@ -33,6 +33,7 @@ graph TB
             FileOps["FileOperationProvider"]
             AppMgr["AppManager"]
             IntentDisp["IntentDispatcher"]
+            LocationProv["LocationProvider"]
         end
 
         subgraph NotifSvc["McpNotificationListenerService (System-managed)"]
@@ -65,6 +66,7 @@ graph TB
         MainAct -->|"StateFlow (status)"| McpServerSvc
         SDK -->|"Singleton\n(companion object)"| AccSvc
         SDK --> StorageSvc
+        SDK --> LocationProv
         SDK --> CameraSvc
         SDK --> NotifSvc
     end
@@ -242,6 +244,8 @@ running requires a restart (UI disables config editing when server is running).
 | AccessibilityService takeScreenshot | Special | User enables in Settings | Screenshots (Android 11+) |
 | CAMERA                   | Runtime       | System dialog                      | Camera photo/video tools  |
 | RECORD_AUDIO             | Runtime       | System dialog                      | Video recording with audio|
+| ACCESS_FINE_LOCATION     | Runtime       | System dialog                      | Device location tool      |
+| ACCESS_COARSE_LOCATION   | Runtime       | Declared (implied by FINE)         | Device location fallback  |
 | SAF tree URI permissions | Special       | User grants via system file picker | File operations per storage location |
 | Notification Listener    | Special       | User enables in Settings > Notification access | Reading/interacting with notifications |
 

@@ -22,6 +22,7 @@ import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerCameraTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerFileTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerGestureTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerIntentTools
+import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerLocationTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerNodeActionTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerNotificationTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerScreenIntrospectionTools
@@ -39,6 +40,7 @@ import com.danielealbano.androidremotecontrolmcp.services.accessibility.TypeInpu
 import com.danielealbano.androidremotecontrolmcp.services.apps.AppManager
 import com.danielealbano.androidremotecontrolmcp.services.camera.CameraProvider
 import com.danielealbano.androidremotecontrolmcp.services.intents.IntentDispatcher
+import com.danielealbano.androidremotecontrolmcp.services.location.LocationProvider
 import com.danielealbano.androidremotecontrolmcp.services.notifications.NotificationProvider
 import com.danielealbano.androidremotecontrolmcp.services.screencapture.ScreenCaptureProvider
 import com.danielealbano.androidremotecontrolmcp.services.screencapture.ScreenshotAnnotator
@@ -120,6 +122,8 @@ class McpServerService : Service() {
     @Inject lateinit var intentDispatcher: IntentDispatcher
 
     @Inject lateinit var notificationProvider: NotificationProvider
+
+    @Inject lateinit var locationProvider: LocationProvider
 
     private val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val serverActive = AtomicBoolean(false)
@@ -329,6 +333,7 @@ class McpServerService : Service() {
         registerCameraTools(server, cameraProvider, fileOperationProvider, toolNamePrefix, perms)
         registerIntentTools(server, intentDispatcher, toolNamePrefix, perms)
         registerNotificationTools(server, notificationProvider, toolNamePrefix, perms)
+        registerLocationTools(server, locationProvider, toolNamePrefix, perms)
     }
 
     override fun onDestroy() {

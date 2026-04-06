@@ -11,6 +11,7 @@ import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerCameraTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerFileTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerGestureTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerIntentTools
+import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerLocationTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerNodeActionTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerNotificationTools
 import com.danielealbano.androidremotecontrolmcp.mcp.tools.registerScreenIntrospectionTools
@@ -30,6 +31,7 @@ import com.danielealbano.androidremotecontrolmcp.services.accessibility.TypeInpu
 import com.danielealbano.androidremotecontrolmcp.services.apps.AppManager
 import com.danielealbano.androidremotecontrolmcp.services.camera.CameraProvider
 import com.danielealbano.androidremotecontrolmcp.services.intents.IntentDispatcher
+import com.danielealbano.androidremotecontrolmcp.services.location.LocationProvider
 import com.danielealbano.androidremotecontrolmcp.services.notifications.NotificationProvider
 import com.danielealbano.androidremotecontrolmcp.services.screencapture.ScreenCaptureProvider
 import com.danielealbano.androidremotecontrolmcp.services.screencapture.ScreenshotAnnotator
@@ -127,6 +129,7 @@ object McpIntegrationTestHelper {
             nodeCache = mockk(relaxed = true),
             intentDispatcher = mockk(relaxed = true),
             notificationProvider = mockk(relaxed = true),
+            locationProvider = mockk(relaxed = true),
         )
 
     /**
@@ -194,6 +197,7 @@ object McpIntegrationTestHelper {
         registerCameraTools(server, deps.cameraProvider, deps.fileOperationProvider, toolNamePrefix, perms)
         registerIntentTools(server, deps.intentDispatcher, toolNamePrefix, perms)
         registerNotificationTools(server, deps.notificationProvider, toolNamePrefix, perms)
+        registerLocationTools(server, deps.locationProvider, toolNamePrefix, perms)
     }
 
     /**
@@ -349,4 +353,5 @@ data class MockDependencies(
     val nodeCache: AccessibilityNodeCache,
     val intentDispatcher: IntentDispatcher,
     val notificationProvider: NotificationProvider,
+    val locationProvider: LocationProvider,
 )

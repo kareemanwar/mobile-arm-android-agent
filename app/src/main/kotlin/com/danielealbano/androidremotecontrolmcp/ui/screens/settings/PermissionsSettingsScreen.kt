@@ -59,6 +59,7 @@ fun PermissionsSettingsScreen(
     onRequestNotificationPermission: () -> Unit,
     onRequestCameraPermission: () -> Unit,
     onRequestMicrophonePermission: () -> Unit,
+    onRequestLocationPermission: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = hiltViewModel(),
 ) {
@@ -70,6 +71,7 @@ fun PermissionsSettingsScreen(
     val isNotificationListenerEnabled by viewModel.isNotificationListenerEnabled.collectAsStateWithLifecycle()
     val isCameraPermissionGranted by viewModel.isCameraPermissionGranted.collectAsStateWithLifecycle()
     val isMicrophonePermissionGranted by viewModel.isMicrophonePermissionGranted.collectAsStateWithLifecycle()
+    val isLocationPermissionGranted by viewModel.isLocationPermissionGranted.collectAsStateWithLifecycle()
 
     // Refresh permissions on ON_RESUME
     DisposableEffect(lifecycleOwner) {
@@ -177,6 +179,21 @@ fun PermissionsSettingsScreen(
                     },
                 onAction = onRequestMicrophonePermission,
                 actionEnabled = !isMicrophonePermissionGranted,
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            PermissionRow(
+                label = stringResource(R.string.permission_location),
+                isEnabled = isLocationPermissionGranted,
+                buttonText =
+                    if (isLocationPermissionGranted) {
+                        stringResource(R.string.permission_granted)
+                    } else {
+                        stringResource(R.string.permission_grant)
+                    },
+                onAction = onRequestLocationPermission,
+                actionEnabled = !isLocationPermissionGranted,
             )
         }
     }

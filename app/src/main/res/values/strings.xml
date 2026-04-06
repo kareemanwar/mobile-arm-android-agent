@@ -95,6 +95,7 @@
     <string name="permission_camera">Camera</string>
     <string name="permission_microphone">Microphone</string>
     <string name="permission_notification_listener">Notification Listener</string>
+    <string name="permission_location">Location</string>
 
     <!-- Permission Warning -->
     <string name="permission_warning_message">Some permissions are not granted. Tap to review.</string>

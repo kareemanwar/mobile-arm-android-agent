@@ -24,6 +24,7 @@ fun SettingsScreen(
     onRequestNotificationPermission: () -> Unit,
     onRequestCameraPermission: () -> Unit,
     onRequestMicrophonePermission: () -> Unit,
+    onRequestLocationPermission: () -> Unit,
     pendingRoute: String? = null,
     onPendingRouteConsumed: () -> Unit = {},
     modifier: Modifier = Modifier,
@@ -66,6 +67,7 @@ fun SettingsScreen(
                 onRequestNotificationPermission = onRequestNotificationPermission,
                 onRequestCameraPermission = onRequestCameraPermission,
                 onRequestMicrophonePermission = onRequestMicrophonePermission,
+                onRequestLocationPermission = onRequestLocationPermission,
                 viewModel = viewModel,
             )
         }

@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var notificationPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var cameraPermissionLauncher: ActivityResultLauncher<String>
     private lateinit var microphonePermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,12 +46,20 @@ class MainActivity : ComponentActivity() {
                 viewModel.refreshPermissionStatus(this)
             }
 
+        locationPermissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestPermission(),
+            ) { _ ->
+                viewModel.refreshPermissionStatus(this)
+            }
+
         setContent {
             AndroidRemoteControlMcpTheme {
                 MainScreen(
                     onRequestNotificationPermission = ::requestNotificationPermission,
                     onRequestCameraPermission = ::requestCameraPermission,
                     onRequestMicrophonePermission = ::requestMicrophonePermission,
+                    onRequestLocationPermission = ::requestLocationPermission,
                 )
             }
         }
@@ -82,5 +91,9 @@ class MainActivity : ComponentActivity() {
      */
     private fun requestMicrophonePermission() {
         microphonePermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+    }
+
+    private fun requestLocationPermission() {
+        locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 }
