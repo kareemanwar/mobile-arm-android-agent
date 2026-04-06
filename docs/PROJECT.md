@@ -370,6 +370,7 @@ The MCP server exposes 55 tools across 13 categories. For full JSON-RPC schemas,
 - **CAMERA**: Runtime permission required for camera photo/video tools. Requested via UI permission launcher
 - **RECORD_AUDIO**: Runtime permission required for video recording with audio. Requested via UI permission launcher
 - **ACCESS_FINE_LOCATION**: Runtime permission required for device location. Requested via UI permission launcher
+- **ACCESS_COARSE_LOCATION**: Declared in manifest (implied by ACCESS_FINE_LOCATION). Provides location fallback
 - Always check permission state before operations; return `CallToolResult(isError = true)` if permission missing
 
 ### Storage Access Framework (SAF) — User-Managed Locations

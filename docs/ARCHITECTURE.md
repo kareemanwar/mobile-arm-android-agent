@@ -66,6 +66,7 @@ graph TB
         MainAct -->|"StateFlow (status)"| McpServerSvc
         SDK -->|"Singleton\n(companion object)"| AccSvc
         SDK --> StorageSvc
+        SDK --> LocationProv
         SDK --> CameraSvc
         SDK --> NotifSvc
     end
