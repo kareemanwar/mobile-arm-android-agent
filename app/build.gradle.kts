@@ -202,6 +202,9 @@ dependencies {
     implementation(libs.camerax.lifecycle)
     implementation(libs.camerax.video)
 
+    // Google Play Services Location
+    implementation(libs.play.services.location)
+
     // Ktor Server
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.netty)

@@ -14,6 +14,7 @@ lifecycle = "2.10.0"
 datastore = "1.2.0"
 documentfile = "1.1.0"
 camerax = "1.5.2"
+play-services-location = "21.3.0"
 
 # Networking
 ktor = "3.4.0"
@@ -91,6 +92,9 @@ camerax-core = { group = "androidx.camera", name = "camera-core", version.ref = 
 camerax-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
 camerax-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
 camerax-video = { group = "androidx.camera", name = "camera-video", version.ref = "camerax" }
+
+# Google Play Services
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "play-services-location" }
 
 # Ktor Server
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }

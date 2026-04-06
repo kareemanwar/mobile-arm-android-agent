@@ -10,9 +10,9 @@
 
 ### Acceptance Criteria
 
-- [ ] `play-services-location` version declared in `gradle/libs.versions.toml`
-- [ ] Library alias declared in `[libraries]` section of `libs.versions.toml`
-- [ ] `implementation(libs.play.services.location)` added to `app/build.gradle.kts`
+- [x] `play-services-location` version declared in `gradle/libs.versions.toml`
+- [x] Library alias declared in `[libraries]` section of `libs.versions.toml`
+- [x] `implementation(libs.play.services.location)` added to `app/build.gradle.kts`
 
 ---
 
@@ -43,8 +43,8 @@ implementation(libs.play.services.location)
 
 **Definition of Done**:
 
-- [ ] Version catalog contains `play-services-location` version and library entry
-- [ ] `build.gradle.kts` references `libs.play.services.location`
+- [x] Version catalog contains `play-services-location` version and library entry
+- [x] `build.gradle.kts` references `libs.play.services.location`
 
 ---
 
@@ -54,8 +54,8 @@ implementation(libs.play.services.location)
 
 ### Acceptance Criteria
 
-- [ ] `ACCESS_FINE_LOCATION` and `ACCESS_COARSE_LOCATION` declared in `AndroidManifest.xml`
-- [ ] `android.hardware.location.gps` feature declared with `required="false"`
+- [x] `ACCESS_FINE_LOCATION` and `ACCESS_COARSE_LOCATION` declared in `AndroidManifest.xml`
+- [x] `android.hardware.location.gps` feature declared with `required="false"`
 
 ---
 
@@ -79,8 +79,8 @@ Add after the existing `<uses-feature>` declarations:
 
 **Definition of Done**:
 
-- [ ] Both location permissions declared in manifest
-- [ ] GPS feature declared as not required
+- [x] Both location permissions declared in manifest
+- [x] GPS feature declared as not required
 
 ---
 
