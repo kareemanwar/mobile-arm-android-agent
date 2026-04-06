@@ -54,8 +54,14 @@ fun getGitDescribeVersion(): String? {
                 val hash = match.groupValues[3]
                 "$baseVersion-dev.$commitCount+$hash"
             }
-            tagPattern.matches(output) -> tagPattern.find(output)!!.groupValues[1]
-            else -> "0.0.0-dev+$output"
+
+            tagPattern.matches(output) -> {
+                tagPattern.find(output)!!.groupValues[1]
+            }
+
+            else -> {
+                "0.0.0-dev+$output"
+            }
         }
     } catch (_: Exception) {
         null
@@ -70,6 +76,10 @@ val fallbackVersion = project.findProperty("VERSION_NAME") as String? ?: "1.0.0"
 val versionNameProp =
     if (isExplicitVersion) fallbackVersion else (getGitDescribeVersion() ?: fallbackVersion)
 val versionCodeProp = (project.findProperty("VERSION_CODE") as String?)?.toInt() ?: 1
+
+ktlint {
+    version.set("1.8.0")
+}
 
 android {
     namespace = "com.danielealbano.androidremotecontrolmcp"
