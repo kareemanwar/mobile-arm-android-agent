@@ -27,12 +27,13 @@ This document provides a comprehensive reference for all MCP tools available in 
 14. [Camera Tools](#10-camera-tools)
 15. [Intent Tools](#11-intent-tools)
 16. [Notification Tools](#12-notification-tools)
+17. [Location Tools](#13-location-tools)
 
 ---
 
 ## Overview
 
-The MCP server exposes 54 tools via the JSON-RPC 2.0 protocol, organized into 12 categories:
+The MCP server exposes 55 tools via the JSON-RPC 2.0 protocol, organized into 13 categories:
 
 | Category | Tools | Plan |
 |----------|-------|------|
@@ -48,6 +49,7 @@ The MCP server exposes 54 tools via the JSON-RPC 2.0 protocol, organized into 12
 | Camera | `android_list_cameras`, `android_list_camera_photo_resolutions`, `android_list_camera_video_resolutions`, `android_take_camera_photo`, `android_save_camera_photo`, `android_save_camera_video` | 27 |
 | Intent | `android_send_intent`, `android_open_uri` | 31 |
 | Notification | `android_notification_list`, `android_notification_open`, `android_notification_dismiss`, `android_notification_snooze`, `android_notification_action`, `android_notification_reply` | 32 |
+| Location | `android_get_location` | 43 |
 
 ## Tool Naming Convention
 
@@ -3311,3 +3313,81 @@ Replies to a notification action that accepts text input (e.g., messaging apps).
 
 - **Notification content exposure**: Notification tools expose notification content (titles, text, app names, action labels) to MCP clients. This is inherent to the feature's purpose. Ensure bearer token authentication is enabled in production to restrict access.
 - **Reply capability**: `android_notification_reply` can send text replies through any notification that accepts text input, including messaging apps. This grants the MCP client the ability to send messages on behalf of the user.
+
+---
+
+## 13. Location Tools
+
+Location tools provide access to the device's geographic location.
+
+**File**: `app/src/main/kotlin/.../mcp/tools/LocationTools.kt`
+**Service**: `LocationProvider` / `LocationProviderImpl`
+**Permission**: `ACCESS_FINE_LOCATION` (runtime), `ACCESS_COARSE_LOCATION` (declared)
+**Dependency**: Google Play Services Location (`play-services-location`)
+
+### `android_get_location`
+
+Retrieves the device's current location including coordinates, accuracy, and street address.
+
+**Parameters**:
+
+| Parameter | Type | Required | Default | Description |
+|-----------|------|----------|---------|-------------|
+| `fresh_fix` | boolean | No | `false` | If `true`, requests a fresh GPS fix (may take up to 10 seconds). If `false`, returns last known location (faster but possibly stale). Can be disabled by the user via the MCP Tools settings toggle, in which case it is forced to `false` regardless of the value sent by the client. |
+
+**Returns**: JSON object with:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `latitude` | number | Latitude in degrees |
+| `longitude` | number | Longitude in degrees |
+| `accuracy_meters` | number | Accuracy radius in meters (68% confidence) |
+| `street` | string \| null | Street address from reverse geocoding, or `null` if geocoding is unavailable |
+
+**Example Request**:
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "android_get_location",
+    "arguments": {}
+  }
+}
+```
+
+**Example Response**:
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "content": [{ "type": "text", "text": "{\"latitude\":37.7749,\"longitude\":-122.4194,\"accuracy_meters\":10.5,\"street\":\"123 Main St, San Francisco, CA\"}" }]
+  }
+}
+```
+
+**Example Request (fresh fix)**:
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "android_get_location",
+    "arguments": {
+      "fresh_fix": true
+    }
+  }
+}
+```
+
+**Error Cases** (returned as `CallToolResult(isError = true)`):
+- **Permission denied**: `ACCESS_FINE_LOCATION` permission not granted on the device
+- **Action failed**: Google Play Services not available; no last known location available (GPS disabled, no cached location); timeout waiting for fresh GPS fix (10 seconds)
+
+### Security Considerations
+
+- **Location data exposure**: The `get_location` tool exposes the device's precise geographic coordinates to MCP clients. Ensure bearer token authentication is enabled in production to restrict access.
+- **Fresh GPS fix**: When `fresh_fix=true`, the tool actively queries the GPS hardware, which may have battery implications if called frequently.

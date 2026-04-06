@@ -915,10 +915,10 @@ Add import for `registerLocationTools` and `LocationProvider`.
 
 ### Acceptance Criteria
 
-- [ ] `get_location` tool documented in `docs/MCP_TOOLS.md`
-- [ ] Location category added to tool count/overview table in `docs/MCP_TOOLS.md`
-- [ ] `docs/PROJECT.md` updated: Frameworks & Libraries, Folder Structure, Permission Handling, Integration Tests mocking list, permissions list
-- [ ] `docs/ARCHITECTURE.md` updated: Permission Model table, Component Diagram (if location service warrants a node)
+- [x] `get_location` tool documented in `docs/MCP_TOOLS.md`
+- [x] Location category added to tool count/overview table in `docs/MCP_TOOLS.md`
+- [x] `docs/PROJECT.md` updated: Frameworks & Libraries, Folder Structure, Permission Handling, Integration Tests mocking list, permissions list
+- [x] `docs/ARCHITECTURE.md` updated: Permission Model table, Component Diagram (if location service warrants a node)
 
 ---
 
@@ -939,8 +939,8 @@ Add a new section for the "Location" tool category. Follow the existing document
 
 **Definition of Done**:
 
-- [ ] `get_location` fully documented in `MCP_TOOLS.md`
-- [ ] Overview section updated with new tool count and category
+- [x] `get_location` fully documented in `MCP_TOOLS.md`
+- [x] Overview section updated with new tool count and category
 
 ---
 
@@ -964,11 +964,11 @@ The following sections MUST be updated:
 
 **Definition of Done**:
 
-- [ ] `play-services-location` added to Frameworks & Libraries
-- [ ] `services/location/`, `LocationData.kt`, `LocationTools.kt` added to Folder Structure
-- [ ] `ACCESS_FINE_LOCATION` added to Permission Handling section
-- [ ] Integration Tests sections updated with location provider
-- [ ] Permissions summary list updated
+- [x] `play-services-location` added to Frameworks & Libraries
+- [x] `services/location/`, `LocationData.kt`, `LocationTools.kt` added to Folder Structure
+- [x] `ACCESS_FINE_LOCATION` added to Permission Handling section
+- [x] Integration Tests sections updated with location provider
+- [x] Permissions summary list updated
 
 ---
 
@@ -987,8 +987,8 @@ The following sections MUST be updated:
 
 **Definition of Done**:
 
-- [ ] Permission Model table includes location permissions
-- [ ] Component diagram updated if applicable (validate with `mmdc`)
+- [x] Permission Model table includes location permissions
+- [x] Component diagram updated if applicable (validate with `mmdc`)
 
 ---
 

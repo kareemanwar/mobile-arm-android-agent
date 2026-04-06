@@ -105,6 +105,7 @@ The typical startup flow: User opens app → enables Accessibility Service in An
 - **Kotlinx Coroutines**: Async/concurrency
 - **Android Log**: Logging (standard Android Log class)
 - **Accompanist**: Compose utilities (permissions handling)
+- **Google Play Services Location**: Device location via FusedLocationProviderClient
 
 ### Testing
 
@@ -132,10 +133,11 @@ The typical startup flow: User opens app → enables Accessibility Service in An
   - `services/storage/` — `StorageLocationProvider.kt`, `StorageLocationProviderImpl.kt`, `FileOperationProvider.kt`, `FileOperationProviderImpl.kt`
   - `services/apps/` — `AppManager.kt`, `AppManagerImpl.kt`
   - `services/camera/` — `CameraProvider.kt`, `CameraProviderImpl.kt`, `ServiceLifecycleOwner.kt`
+  - `services/location/` — `LocationProvider.kt`, `LocationProviderImpl.kt`
   - `services/mcp/` — `McpServerService.kt`, `BootCompletedReceiver.kt`, `AdbConfigHandler.kt`, `AdbConfigReceiver.kt`, `AdbServiceTrampolineActivity.kt`
   - `services/tunnel/` — `TunnelProvider.kt`, `TunnelManager.kt`, `CloudflareTunnelProvider.kt`, `CloudflaredBinaryResolver.kt`, `AndroidCloudflareBinaryResolver.kt`, `NgrokTunnelProvider.kt`
   - `mcp/` — `McpServer.kt`, `McpStreamableHttpExtension.kt`, `McpToolException.kt`, `CertificateManager.kt`
-  - `mcp/tools/` — `McpToolUtils.kt`, `TreeFingerprint.kt`, `ScreenIntrospectionTools.kt`, `TouchActionTools.kt`, `NodeActionTools.kt`, `TextInputTools.kt`, `SystemActionTools.kt`, `GestureTools.kt`, `UtilityTools.kt`, `FileTools.kt`, `AppManagementTools.kt`, `CameraTools.kt`
+  - `mcp/tools/` — `McpToolUtils.kt`, `TreeFingerprint.kt`, `ScreenIntrospectionTools.kt`, `TouchActionTools.kt`, `NodeActionTools.kt`, `TextInputTools.kt`, `SystemActionTools.kt`, `GestureTools.kt`, `UtilityTools.kt`, `FileTools.kt`, `AppManagementTools.kt`, `CameraTools.kt`, `LocationTools.kt`
   - `mcp/auth/` — `BearerTokenAuth.kt`
   - `ui/` — `MainActivity.kt`
   - `ui/theme/` — `Theme.kt`, `Color.kt`, `Type.kt`
@@ -143,7 +145,7 @@ The typical startup flow: User opens app → enables Accessibility Service in An
   - `ui/components/` — `ServerStatusCard.kt`, `ConfigurationSection.kt`, `RemoteAccessSection.kt`, `ConnectionInfoCard.kt`, `PermissionsSection.kt`, `ServerLogsSection.kt`, `StorageLocationsSection.kt`
   - `ui/viewmodels/` — `MainViewModel.kt`
   - `data/repository/` — `SettingsRepository.kt`, `SettingsRepositoryImpl.kt`
-  - `data/model/` — `ServerConfig.kt`, `ServerStatus.kt`, `ServerLogEntry.kt`, `BindingAddress.kt`, `CertificateSource.kt`, `ScreenshotData.kt`, `TunnelProviderType.kt`, `TunnelStatus.kt`, `StorageLocation.kt`, `FileInfo.kt`, `AppInfo.kt`, `AppFilter.kt`, `CameraInfo.kt`, `CameraResolution.kt`
+  - `data/model/` — `ServerConfig.kt`, `ServerStatus.kt`, `ServerLogEntry.kt`, `BindingAddress.kt`, `CertificateSource.kt`, `ScreenshotData.kt`, `TunnelProviderType.kt`, `TunnelStatus.kt`, `StorageLocation.kt`, `FileInfo.kt`, `AppInfo.kt`, `AppFilter.kt`, `CameraInfo.kt`, `CameraResolution.kt`, `LocationData.kt`
   - `di/` — `AppModule.kt`
   - `utils/` — `NetworkUtils.kt`, `PermissionUtils.kt`, `Logger.kt`
 - `app/src/main/res/` — `values/strings.xml`, `values/themes.xml`, `drawable/`, `mipmap/`, `xml/accessibility_service_config.xml`
@@ -367,6 +369,7 @@ The MCP server exposes 53 tools across 12 categories. For full JSON-RPC schemas,
 - **KILL_BACKGROUND_PROCESSES**: Required for killing background app processes via `ActivityManager.killBackgroundProcesses()`. Declared in manifest, granted automatically
 - **CAMERA**: Runtime permission required for camera photo/video tools. Requested via UI permission launcher
 - **RECORD_AUDIO**: Runtime permission required for video recording with audio. Requested via UI permission launcher
+- **ACCESS_FINE_LOCATION**: Runtime permission required for device location. Requested via UI permission launcher
 - Always check permission state before operations; return `CallToolResult(isError = true)` if permission missing
 
 ### Storage Access Framework (SAF) — User-Managed Locations
@@ -506,8 +509,8 @@ HomeScreen contains a TopAppBar, then a scrollable layout with: ServerStatusCard
 ### Integration Tests
 
 - **Framework**: Ktor `testApplication`, JUnit 5, MockK
-- **Scope**: Full HTTP stack (authentication, JSON-RPC protocol, tool dispatch) via in-process Ktor test server; all 10 tool categories, error code propagation
-- **Mocking**: Mock Android services (`ActionExecutor`, `AccessibilityServiceProvider`, `ScreenCaptureProvider`, `AccessibilityTreeParser`, `ElementFinder`, `TypeInputController`, `StorageLocationProvider`, `FileOperationProvider`, `AppManager`, `CameraProvider`) via interfaces; real SDK `Server` with `McpStreamableHttp` routing and `BearerTokenAuth`
+- **Scope**: Full HTTP stack (authentication, JSON-RPC protocol, tool dispatch) via in-process Ktor test server; all 11 tool categories, error code propagation
+- **Mocking**: Mock Android services (`ActionExecutor`, `AccessibilityServiceProvider`, `ScreenCaptureProvider`, `AccessibilityTreeParser`, `ElementFinder`, `TypeInputController`, `StorageLocationProvider`, `FileOperationProvider`, `AppManager`, `CameraProvider`, `LocationProvider`) via interfaces; real SDK `Server` with `McpStreamableHttp` routing and `BearerTokenAuth`
 - **Infrastructure**: `McpIntegrationTestHelper` configures `testApplication` with same routing as production `McpServer`; uses SDK `Client` + `StreamableHttpClientTransport` for type-safe MCP communication
 - **Run**: `make test-integration` or `./gradlew :app:testDebugUnitTest --tests "com.danielealbano.androidremotecontrolmcp.integration.*"`
 - **Note**: JVM-based, no emulator or device required. Runs as part of `make test-unit` since both are under `app/src/test/`
@@ -618,7 +621,7 @@ Tunnel architecture:
 
 ### Permission Security
 
-Only necessary permissions: `INTERNET`, `FOREGROUND_SERVICE`, `RECEIVE_BOOT_COMPLETED`, `QUERY_ALL_PACKAGES` (app listing), `KILL_BACKGROUND_PROCESSES` (app closing), `CAMERA` (camera tools, runtime), `RECORD_AUDIO` (video recording with audio, runtime), Accessibility Service (user-granted via Settings), SAF tree URI permissions (user-granted per storage location via system file picker). Display clear explanations before requesting.
+Only necessary permissions: `INTERNET`, `FOREGROUND_SERVICE`, `RECEIVE_BOOT_COMPLETED`, `QUERY_ALL_PACKAGES` (app listing), `KILL_BACKGROUND_PROCESSES` (app closing), `CAMERA` (camera tools, runtime), `RECORD_AUDIO` (video recording with audio, runtime), `ACCESS_FINE_LOCATION` (device location, runtime), `ACCESS_COARSE_LOCATION` (location fallback, declared), Accessibility Service (user-granted via Settings), SAF tree URI permissions (user-granted per storage location via system file picker). Display clear explanations before requesting.
 Per-location read/write/delete permissions are enforced by `FileOperationProvider` — see the Storage Location Permissions section above.
 
 ### Code Security
