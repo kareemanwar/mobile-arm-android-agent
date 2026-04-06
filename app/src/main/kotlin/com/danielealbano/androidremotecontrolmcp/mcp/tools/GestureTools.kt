@@ -77,7 +77,7 @@ class PinchTool
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Performs a pinch-to-zoom gesture.",
+                description = "Performs a pinch-to-zoom gesture. Returns after the gesture completes.",
                 inputSchema =
                     ToolSchema(
                         properties =
@@ -338,7 +338,9 @@ class CustomGestureTool
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Executes a custom multi-touch gesture defined by path points.",
+                description =
+                    "Executes a custom multi-touch gesture defined by path points. " +
+                        "Returns after the gesture completes.",
                 inputSchema =
                     ToolSchema(
                         properties =

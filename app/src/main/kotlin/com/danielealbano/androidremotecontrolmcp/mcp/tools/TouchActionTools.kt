@@ -53,7 +53,9 @@ class TapTool
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Performs a single tap at the specified coordinates.",
+                description =
+                    "Performs a single tap at the specified coordinates. " +
+                        "Returns after the gesture completes.",
                 inputSchema =
                     ToolSchema(
                         properties =
@@ -117,7 +119,9 @@ class LongPressTool
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Performs a long press at the specified coordinates.",
+                description =
+                    "Performs a long press at the specified coordinates. " +
+                        "Returns after the gesture completes.",
                 inputSchema =
                     ToolSchema(
                         properties =
@@ -185,7 +189,9 @@ class DoubleTapTool
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Performs a double tap at the specified coordinates.",
+                description =
+                    "Performs a double tap at the specified coordinates. " +
+                        "Returns after the gesture completes.",
                 inputSchema =
                     ToolSchema(
                         properties =
@@ -254,7 +260,9 @@ class SwipeTool
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Performs a swipe gesture from one point to another.",
+                description =
+                    "Performs a swipe gesture from one point to another. " +
+                        "Returns after the gesture completes.",
                 inputSchema =
                     ToolSchema(
                         properties =
@@ -362,7 +370,8 @@ class ScrollTool
                 name = "$toolNamePrefix$TOOL_NAME",
                 description =
                     "Scrolls in the specified direction. Applies random variance to " +
-                        "scroll distance and center point for more natural-looking gestures.",
+                        "scroll distance and center point for more natural-looking gestures. " +
+                        "Returns after the gesture completes.",
                 inputSchema =
                     ToolSchema(
                         properties =
