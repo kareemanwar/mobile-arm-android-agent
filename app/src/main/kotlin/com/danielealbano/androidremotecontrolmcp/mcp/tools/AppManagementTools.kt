@@ -58,7 +58,8 @@ class OpenAppHandler
                 name = "$toolNamePrefix$TOOL_NAME",
                 description =
                     "Opens (launches) an application by its package ID. " +
-                        "The app must be installed and have a launchable activity.",
+                        "The app must be installed and have a launchable activity. " +
+                        "Returns after the launch intent is sent.",
                 inputSchema =
                     ToolSchema(
                         properties =
@@ -223,7 +224,7 @@ class CloseAppHandler
                     "Kills a background application process. This only works for apps " +
                         "that are in the background. For foreground apps that are hung or " +
                         "unresponsive, first use the '${toolNamePrefix}press_home' tool to send the app to the " +
-                        "background, wait briefly, then call this tool. Note: some system " +
+                        "background, then call this tool. Note: some system " +
                         "processes may restart automatically after being killed.",
                 inputSchema =
                     ToolSchema(

@@ -88,7 +88,7 @@ class PressBackHandler
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Presses the back button (global accessibility action).",
+                description = "Presses the back button (global accessibility action). Returns after the action is performed.",
                 inputSchema =
                     ToolSchema(
                         properties = buildJsonObject {},
@@ -135,7 +135,7 @@ class PressHomeHandler
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Navigates to the home screen.",
+                description = "Navigates to the home screen. Returns after the action is performed.",
                 inputSchema =
                     ToolSchema(
                         properties = buildJsonObject {},
@@ -182,7 +182,7 @@ class PressRecentsHandler
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Opens the recent apps screen.",
+                description = "Opens the recent apps screen. Returns after the action is performed.",
                 inputSchema =
                     ToolSchema(
                         properties = buildJsonObject {},
@@ -229,7 +229,7 @@ class OpenNotificationsHandler
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Pulls down the notification shade.",
+                description = "Pulls down the notification shade. Returns after the action is performed.",
                 inputSchema =
                     ToolSchema(
                         properties = buildJsonObject {},
@@ -276,7 +276,7 @@ class OpenQuickSettingsHandler
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Opens the quick settings panel.",
+                description = "Opens the quick settings panel. Returns after the action is performed.",
                 inputSchema =
                     ToolSchema(
                         properties = buildJsonObject {},

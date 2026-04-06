@@ -181,7 +181,7 @@ class ClickNodeTool
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Click the specified accessibility node by node ID",
+                description = "Click the specified accessibility node by node ID. Returns after the click is performed.",
                 inputSchema =
                     ToolSchema(
                         properties =
@@ -239,7 +239,7 @@ class LongClickNodeTool
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Long-click the specified accessibility node by node ID",
+                description = "Long-click the specified accessibility node by node ID. Returns after the action is performed.",
                 inputSchema =
                     ToolSchema(
                         properties =
@@ -348,7 +348,8 @@ class TapNodeTool
                         "node identified by node_id. Unlike click_node (which uses the " +
                         "accessibility ACTION_CLICK), this performs a coordinate-based touch gesture. " +
                         "The tap point is randomized within the node bounds, inset by a configurable " +
-                        "percentage (default 5%) from each edge to avoid hitting borders.",
+                        "percentage (default 5%) from each edge to avoid hitting borders. " +
+                        "Returns after the gesture completes.",
                 inputSchema =
                     ToolSchema(
                         properties =
@@ -560,7 +561,7 @@ class ScrollToNodeTool
         ) {
             server.addTool(
                 name = "$toolNamePrefix$TOOL_NAME",
-                description = "Scroll to make the specified node visible",
+                description = "Scroll to make the specified node visible. Returns after the action is performed.",
                 inputSchema =
                     ToolSchema(
                         properties =
