@@ -852,8 +852,8 @@ Add import for `registerLocationTools` and `LocationProvider`.
 
 ### Acceptance Criteria
 
-- [ ] `LocationToolsTest.kt` covers handler logic
-- [ ] `LocationProviderImplTest.kt` covers provider logic
+- [x] `LocationToolsTest.kt` covers handler logic
+- [x] `LocationProviderImplTest.kt` covers provider logic
 
 ---
 
@@ -878,7 +878,7 @@ Add import for `registerLocationTools` and `LocationProvider`.
 
 **Definition of Done**:
 
-- [ ] All 10 unit tests implemented and passing
+- [x] All 10 unit tests implemented and passing
 
 ---
 
@@ -905,7 +905,7 @@ Add import for `registerLocationTools` and `LocationProvider`.
 
 **Definition of Done**:
 
-- [ ] All 12 unit tests implemented and passing
+- [x] All 12 unit tests implemented and passing
 
 ---
 
