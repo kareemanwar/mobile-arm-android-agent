@@ -71,6 +71,10 @@ val versionNameProp =
     if (isExplicitVersion) fallbackVersion else (getGitDescribeVersion() ?: fallbackVersion)
 val versionCodeProp = (project.findProperty("VERSION_CODE") as String?)?.toInt() ?: 1
 
+ktlint {
+    version.set("1.8.0")
+}
+
 android {
     namespace = "com.danielealbano.androidremotecontrolmcp"
     compileSdk = 36
