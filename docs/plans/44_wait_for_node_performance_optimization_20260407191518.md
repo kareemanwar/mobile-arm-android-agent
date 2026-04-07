@@ -399,14 +399,14 @@ every { mockRootNode.text } returns "Hello World"
 
 #### Definition of Done
 
-- [ ] `setupMultiWindowMock` stubs `text`, `contentDescription`, `viewIdResourceName`, `className`, `childCount`, `availableExtraData` on `mockRootNode` with null/0/empty defaults.
-- [ ] `setupMultiWindowMock` return type changed from `Unit` to `AccessibilityNodeInfo`, returns `mockRootNode`.
-- [ ] `UtilityIntegrationTest.wait_for_node success` test updated to stub `mockRootNode.text` with `"Hello World"`.
+- [x] `setupMultiWindowMock` stubs `text`, `contentDescription`, `viewIdResourceName`, `className`, `childCount`, `availableExtraData` on `mockRootNode` with null/0/empty defaults.
+- [x] `setupMultiWindowMock` return type changed from `Unit` to `AccessibilityNodeInfo`, returns `mockRootNode`.
+- [x] `UtilityIntegrationTest.wait_for_node success` test updated to stub `mockRootNode.text` with `"Hello World"`.
 - [ ] All integration tests in `UtilityIntegrationTest.kt` pass.
 - [ ] All integration tests in `ErrorHandlingIntegrationTest.kt` pass.
 - [ ] All integration tests in `ToolPermissionsIntegrationTest.kt` pass.
 - [ ] All integration tests in `McpProtocolIntegrationTest.kt` pass.
-- [ ] All other callers of `setupMultiWindowMock` still work (the return value can be ignored — changing from `Unit` to `AccessibilityNodeInfo` is source-compatible).
+- [x] All other callers of `setupMultiWindowMock` still work (the return value can be ignored — changing from `Unit` to `AccessibilityNodeInfo` is source-compatible).
 
 **IMPORTANT — `ErrorHandlingIntegrationTest.wait_for_node timeout` test fix**:
 
@@ -444,7 +444,7 @@ every { SystemClock.elapsedRealtime() } answers {
 // No findElements mock needed — rawNodeExists returns false, findElements is never called
 ```
 
-- [ ] `ErrorHandlingIntegrationTest.wait_for_node timeout` test updated to advance clock via `elapsedRealtime()` answer.
+- [x] `ErrorHandlingIntegrationTest.wait_for_node timeout` test updated to advance clock via `elapsedRealtime()` answer.
 
 ---
 

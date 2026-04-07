@@ -174,7 +174,10 @@ class UtilityIntegrationTest {
                 every { SystemClock.elapsedRealtime() } returns 0L
 
                 val deps = McpIntegrationTestHelper.createMockDependencies()
-                McpIntegrationTestHelper.setupMultiWindowMock(deps, sampleTree, sampleScreenInfo)
+                val mockRootNode =
+                    McpIntegrationTestHelper.setupMultiWindowMock(deps, sampleTree, sampleScreenInfo)
+                // Stub raw node text so rawNodeExists() finds the match
+                every { mockRootNode.text } returns "Hello World"
 
                 every {
                     deps.elementFinder.findElements(
