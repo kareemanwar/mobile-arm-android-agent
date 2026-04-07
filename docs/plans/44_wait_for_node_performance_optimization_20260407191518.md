@@ -10,17 +10,17 @@ Optimize `WaitForNodeTool` by replacing the heavyweight `getFreshWindows()` + `E
 
 ### Acceptance Criteria
 
-- [ ] Raw-node search walks all windows (multi-window path + single-window fallback), refreshes root nodes and virtual/Compose child nodes, and matches by the four `FindBy` criteria using case-insensitive contains (same as `ElementFinder.matchesValue` with `exactMatch=false`).
-- [ ] Raw-node search returns `true` on first match (early exit) without visiting remaining nodes.
-- [ ] Raw-node search does NOT create `AccessibilityNodeData`, `BoundsData`, `CachedNode` objects, and does NOT populate `AccessibilityNodeCache`.
-- [ ] `WaitForNodeTool.execute()` uses raw-node search for polling. On the final successful iteration, it calls `getFreshWindows()` + `ElementFinder.findElements()` to build the response.
-- [ ] `POLL_INTERVAL_MS` is changed from 500ms to 150ms.
-- [ ] `MAX_TREE_DEPTH` is respected (same depth limit as `AccessibilityTreeParser.MAX_TREE_DEPTH` = 100).
-- [ ] `AccessibilityWindowInfo` objects are recycled after each poll iteration (same as `getFreshWindows`).
-- [ ] Error handling is preserved: `PermissionDenied` propagates, other `McpToolException` retries on next poll.
-- [ ] The tool's external contract (response JSON shape, parameters, behavior) is unchanged.
-- [ ] All existing unit tests and integration tests pass.
-- [ ] New unit tests cover the raw-node search function.
+- [x] Raw-node search walks all windows (multi-window path + single-window fallback), refreshes root nodes and virtual/Compose child nodes, and matches by the four `FindBy` criteria using case-insensitive contains (same as `ElementFinder.matchesValue` with `exactMatch=false`).
+- [x] Raw-node search returns `true` on first match (early exit) without visiting remaining nodes.
+- [x] Raw-node search does NOT create `AccessibilityNodeData`, `BoundsData`, `CachedNode` objects, and does NOT populate `AccessibilityNodeCache`.
+- [x] `WaitForNodeTool.execute()` uses raw-node search for polling. On the final successful iteration, it calls `getFreshWindows()` + `ElementFinder.findElements()` to build the response.
+- [x] `POLL_INTERVAL_MS` is changed from 500ms to 150ms.
+- [x] `MAX_TREE_DEPTH` is respected (same depth limit as `AccessibilityTreeParser.MAX_TREE_DEPTH` = 100).
+- [x] `AccessibilityWindowInfo` objects are recycled after each poll iteration (same as `getFreshWindows`).
+- [x] Error handling is preserved: `PermissionDenied` propagates, other `McpToolException` retries on next poll.
+- [x] The tool's external contract (response JSON shape, parameters, behavior) is unchanged.
+- [x] All existing unit tests and integration tests pass.
+- [x] New unit tests cover the raw-node search function.
 
 ---
 
@@ -466,25 +466,25 @@ every { SystemClock.elapsedRealtime() } answers {
 
 Verify the following checklist:
 
-- [ ] `COMPOSE_SEMANTICS_ID_KEY` is `internal const val` in `AccessibilityTreeParser.Companion` — no other changes to that file.
-- [ ] `rawNodeExists()` refreshes root nodes via `rootNode.refresh()` for every window (multi-window path) and for the fallback single-window path.
-- [ ] `rawNodeExists()` refreshes virtual/Compose child nodes using the exact same condition as `AccessibilityTreeParser.parseNode`: `child.viewIdResourceName == null || child.availableExtraData.contains(AccessibilityTreeParser.COMPOSE_SEMANTICS_ID_KEY)`.
-- [ ] `rawNodeMatchesRecursive()` uses case-insensitive `contains` matching (same as `ElementFinder.matchesValue` with `exactMatch=false`).
-- [ ] `rawNodeMatchesRecursive()` returns `true` immediately on first match (early exit).
-- [ ] `rawNodeMatchesRecursive()` respects `AccessibilityTreeParser.MAX_TREE_DEPTH` (100).
-- [ ] `rawNodeExists()` recycles `AccessibilityWindowInfo` objects in a `finally` block (multi-window path).
-- [ ] `rawNodeExists()` handles the single-window fallback path when `getAccessibilityWindows()` returns empty.
-- [ ] `WaitForNodeTool.execute()` poll loop: calls `rawNodeExists()` first, then `getFreshWindows()` + `findElements()` only when `rawNodeExists()` returns `true`.
-- [ ] `WaitForNodeTool.execute()` handles the race condition (raw match but full parse miss) by continuing the poll loop.
-- [ ] `POLL_INTERVAL_MS` is `150L`.
-- [ ] Response JSON shape is identical to the original (no fields added, removed, or renamed).
-- [ ] No `AccessibilityNodeData`, `BoundsData`, or `CachedNode` objects are created during the lightweight polling phase.
-- [ ] No `AccessibilityNodeCache.populate()` is called during the lightweight polling phase.
-- [ ] Unit test `setUp()` has baseline raw node property stubs on `mockRootNode`.
-- [ ] `McpIntegrationTestHelper.setupMultiWindowMock` returns `AccessibilityNodeInfo` and stubs raw node properties with null/0/empty defaults.
-- [ ] `UtilityIntegrationTest.wait_for_node success` stubs `mockRootNode.text` with `"Hello World"` so `rawNodeExists` returns `true`.
-- [ ] `ErrorHandlingIntegrationTest.wait_for_node timeout` advances clock via `elapsedRealtime()` answer, not `findElements` answer.
-- [ ] All unit tests pass and cover the new behavior.
-- [ ] All integration tests pass.
-- [ ] No linting violations.
-- [ ] Build succeeds.
+- [x] `COMPOSE_SEMANTICS_ID_KEY` is `internal const val` in `AccessibilityTreeParser.Companion` — no other changes to that file.
+- [x] `rawNodeExists()` refreshes root nodes via `rootNode.refresh()` for every window (multi-window path) and for the fallback single-window path.
+- [x] `rawNodeExists()` refreshes virtual/Compose child nodes using the exact same condition as `AccessibilityTreeParser.parseNode`: `child.viewIdResourceName == null || child.availableExtraData.contains(AccessibilityTreeParser.COMPOSE_SEMANTICS_ID_KEY)`.
+- [x] `rawNodeMatchesRecursive()` uses case-insensitive `contains` matching (same as `ElementFinder.matchesValue` with `exactMatch=false`).
+- [x] `rawNodeMatchesRecursive()` returns `true` immediately on first match (early exit).
+- [x] `rawNodeMatchesRecursive()` respects `AccessibilityTreeParser.MAX_TREE_DEPTH` (100).
+- [x] `rawNodeExists()` recycles `AccessibilityWindowInfo` objects in a `finally` block (multi-window path).
+- [x] `rawNodeExists()` handles the single-window fallback path when `getAccessibilityWindows()` returns empty.
+- [x] `WaitForNodeTool.execute()` poll loop: calls `rawNodeExists()` first, then `getFreshWindows()` + `findElements()` only when `rawNodeExists()` returns `true`.
+- [x] `WaitForNodeTool.execute()` handles the race condition (raw match but full parse miss) by continuing the poll loop.
+- [x] `POLL_INTERVAL_MS` is `150L`.
+- [x] Response JSON shape is identical to the original (no fields added, removed, or renamed).
+- [x] No `AccessibilityNodeData`, `BoundsData`, or `CachedNode` objects are created during the lightweight polling phase.
+- [x] No `AccessibilityNodeCache.populate()` is called during the lightweight polling phase.
+- [x] Unit test `setUp()` has baseline raw node property stubs on `mockRootNode`.
+- [x] `McpIntegrationTestHelper.setupMultiWindowMock` returns `AccessibilityNodeInfo` and stubs raw node properties with null/0/empty defaults.
+- [x] `UtilityIntegrationTest.wait_for_node success` stubs `mockRootNode.text` with `"Hello World"` so `rawNodeExists` returns `true`.
+- [x] `ErrorHandlingIntegrationTest.wait_for_node timeout` advances clock via `elapsedRealtime()` answer, not `findElements` answer.
+- [x] All unit tests pass and cover the new behavior.
+- [x] All integration tests pass.
+- [x] No linting violations.
+- [x] Build succeeds.
