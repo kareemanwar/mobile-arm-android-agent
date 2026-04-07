@@ -66,6 +66,18 @@ class UtilityIntegrationTest {
             orientation = "portrait",
         )
 
+    private val sampleElementInfoA =
+        ElementInfo(
+            id = "node_a",
+            text = "Hello World",
+            contentDescription = "A button",
+            className = "android.widget.Button",
+            bounds = BoundsData(50, 800, 250, 1000),
+            clickable = true,
+            enabled = true,
+            visible = true,
+        )
+
     @BeforeEach
     fun setUp() {
         McpIntegrationTestHelper.mockAndroidLog()
@@ -186,19 +198,7 @@ class UtilityIntegrationTest {
                         "Hello World",
                         false,
                     )
-                } returns
-                    listOf(
-                        ElementInfo(
-                            id = "node_a",
-                            text = "Hello World",
-                            contentDescription = "A button",
-                            className = "android.widget.Button",
-                            bounds = BoundsData(50, 800, 250, 1000),
-                            clickable = true,
-                            enabled = true,
-                            visible = true,
-                        ),
-                    )
+                } returns listOf(sampleElementInfoA)
 
                 McpIntegrationTestHelper.withTestApplication(deps) { client, _ ->
                     val result =

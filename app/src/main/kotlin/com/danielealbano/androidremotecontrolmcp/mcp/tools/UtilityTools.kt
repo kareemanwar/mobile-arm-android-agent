@@ -5,13 +5,13 @@ import android.content.ClipboardManager
 import android.os.SystemClock
 import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
-import com.danielealbano.androidremotecontrolmcp.services.accessibility.FindBy
 import com.danielealbano.androidremotecontrolmcp.data.model.ToolPermissionsConfig
 import com.danielealbano.androidremotecontrolmcp.mcp.McpToolException
 import com.danielealbano.androidremotecontrolmcp.services.accessibility.AccessibilityNodeCache
 import com.danielealbano.androidremotecontrolmcp.services.accessibility.AccessibilityServiceProvider
 import com.danielealbano.androidremotecontrolmcp.services.accessibility.AccessibilityTreeParser
 import com.danielealbano.androidremotecontrolmcp.services.accessibility.ElementFinder
+import com.danielealbano.androidremotecontrolmcp.services.accessibility.FindBy
 import io.modelcontextprotocol.kotlin.sdk.server.Server
 import io.modelcontextprotocol.kotlin.sdk.types.CallToolResult
 import io.modelcontextprotocol.kotlin.sdk.types.ToolSchema
@@ -193,7 +193,13 @@ class WaitForNodeTool
         private val accessibilityServiceProvider: AccessibilityServiceProvider,
         private val nodeCache: AccessibilityNodeCache,
     ) {
-        @Suppress("CyclomaticComplexity", "LongMethod", "ThrowsCount", "InstanceOfCheckForException")
+        @Suppress(
+            "CyclomaticComplexity",
+            "LongMethod",
+            "ThrowsCount",
+            "InstanceOfCheckForException",
+            "NestedBlockDepth",
+        )
         suspend fun execute(arguments: JsonObject?): CallToolResult {
             // Validate parameters
             val byStr =
@@ -351,7 +357,7 @@ class WaitForNodeTool
  * @throws McpToolException.PermissionDenied if accessibility service is not ready.
  * @throws McpToolException.ActionFailed if no windows or root nodes are available.
  */
-@Suppress("ThrowsCount")
+@Suppress("ThrowsCount", "ReturnCount", "NestedBlockDepth")
 internal fun rawNodeExists(
     findBy: FindBy,
     value: String,
@@ -386,11 +392,12 @@ internal fun rawNodeExists(
     }
 
     // Fallback to single-window mode
-    val rootNode = accessibilityServiceProvider.getRootNode()
-        ?: throw McpToolException.ActionFailed(
-            "No windows available and no active window root node. " +
-                "The screen may be transitioning.",
-        )
+    val rootNode =
+        accessibilityServiceProvider.getRootNode()
+            ?: throw McpToolException.ActionFailed(
+                "No windows available and no active window root node. " +
+                    "The screen may be transitioning.",
+            )
     rootNode.refresh()
     return rawNodeMatchesRecursive(rootNode, findBy, value, 0)
 }
@@ -403,6 +410,7 @@ internal fun rawNodeExists(
  * Child nodes obtained via [AccessibilityNodeInfo.getChild] are NOT recycled —
  * [AccessibilityNodeInfo.recycle] is a no-op on API 33+ (this project's minSdk).
  */
+@Suppress("ReturnCount")
 private fun rawNodeMatchesRecursive(
     node: AccessibilityNodeInfo,
     findBy: FindBy,
@@ -410,12 +418,13 @@ private fun rawNodeMatchesRecursive(
     depth: Int,
 ): Boolean {
     // Check current node
-    val nodeValue = when (findBy) {
-        FindBy.TEXT -> node.text?.toString()
-        FindBy.CONTENT_DESC -> node.contentDescription?.toString()
-        FindBy.RESOURCE_ID -> node.viewIdResourceName
-        FindBy.CLASS_NAME -> node.className?.toString()
-    }
+    val nodeValue =
+        when (findBy) {
+            FindBy.TEXT -> node.text?.toString()
+            FindBy.CONTENT_DESC -> node.contentDescription?.toString()
+            FindBy.RESOURCE_ID -> node.viewIdResourceName
+            FindBy.CLASS_NAME -> node.className?.toString()
+        }
 
     if (nodeValue != null && nodeValue.contains(value, ignoreCase = true)) {
         return true

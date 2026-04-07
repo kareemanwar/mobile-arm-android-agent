@@ -402,10 +402,10 @@ every { mockRootNode.text } returns "Hello World"
 - [x] `setupMultiWindowMock` stubs `text`, `contentDescription`, `viewIdResourceName`, `className`, `childCount`, `availableExtraData` on `mockRootNode` with null/0/empty defaults.
 - [x] `setupMultiWindowMock` return type changed from `Unit` to `AccessibilityNodeInfo`, returns `mockRootNode`.
 - [x] `UtilityIntegrationTest.wait_for_node success` test updated to stub `mockRootNode.text` with `"Hello World"`.
-- [ ] All integration tests in `UtilityIntegrationTest.kt` pass.
-- [ ] All integration tests in `ErrorHandlingIntegrationTest.kt` pass.
-- [ ] All integration tests in `ToolPermissionsIntegrationTest.kt` pass.
-- [ ] All integration tests in `McpProtocolIntegrationTest.kt` pass.
+- [x] All integration tests in `UtilityIntegrationTest.kt` pass.
+- [x] All integration tests in `ErrorHandlingIntegrationTest.kt` pass.
+- [x] All integration tests in `ToolPermissionsIntegrationTest.kt` pass.
+- [x] All integration tests in `McpProtocolIntegrationTest.kt` pass.
 - [x] All other callers of `setupMultiWindowMock` still work (the return value can be ignored — changing from `Unit` to `AccessibilityNodeInfo` is source-compatible).
 
 **IMPORTANT — `ErrorHandlingIntegrationTest.wait_for_node timeout` test fix**:
@@ -454,9 +454,9 @@ every { SystemClock.elapsedRealtime() } answers {
 
 #### Definition of Done
 
-- [ ] `make lint` passes with zero warnings and zero errors.
-- [ ] `make test` passes with all tests green.
-- [ ] `./gradlew build` succeeds with no warnings and no errors.
+- [x] `make lint` passes with zero warnings and zero errors.
+- [x] `make test` passes with all tests green.
+- [x] `./gradlew build` succeeds with no warnings and no errors.
 
 ---
 

@@ -373,9 +373,10 @@ class UtilityToolsTest {
             every { composeChild.viewIdResourceName } returns "com.example:id/compose"
             every { composeChild.className } returns "android.widget.TextView"
             every { composeChild.childCount } returns 0
-            every { composeChild.availableExtraData } returns listOf(
-                AccessibilityTreeParser.COMPOSE_SEMANTICS_ID_KEY,
-            )
+            every { composeChild.availableExtraData } returns
+                listOf(
+                    AccessibilityTreeParser.COMPOSE_SEMANTICS_ID_KEY,
+                )
             every { composeChild.refresh() } returns true
 
             // Child with non-null resourceId and no Compose key -> should NOT be refreshed
