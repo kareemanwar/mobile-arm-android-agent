@@ -22,7 +22,7 @@ The app runs directly on your Android device (or emulator) and exposes an HTTP s
 - Auto-start on boot
 - Remote access tunnels via Cloudflare Quick Tunnels or ngrok (public HTTPS URL)
 
-### 54 MCP Tools across 12 Categories
+### 55 MCP Tools across 13 Categories
 
 All tool names use the `android_` prefix by default (e.g., `android_tap`). When a device slug is configured (e.g., `pixel7`), the prefix becomes `android_pixel7_` (e.g., `android_pixel7_tap`). See [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) for the full naming convention.
 
@@ -40,6 +40,7 @@ All tool names use the `android_` prefix by default (e.g., `android_tap`). When 
 | **Camera** (6) | `android_list_cameras`, `android_list_camera_photo_resolutions`, `android_list_camera_video_resolutions`, `android_take_camera_photo`, `android_save_camera_photo`, `android_save_camera_video` | Camera photo/video capture via CameraX, list capabilities and resolutions |
 | **Intent** (2) | `android_send_intent`, `android_open_uri` | Send explicit/implicit intents and open URIs via the system |
 | **Notification** (6) | `android_notification_list`, `android_notification_open`, `android_notification_dismiss`, `android_notification_snooze`, `android_notification_action`, `android_notification_reply` | Read, interact with, and manage device notifications via NotificationListenerService |
+| **Location** (1) | `android_get_location` | Retrieve device geographic coordinates via LocationManager (GPS/network/fused providers) |
 
 See [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) for full tool documentation with input/output schemas and examples.
 
@@ -58,7 +59,7 @@ See [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) for full tool documentation with inpu
 
 | Feature | This project | [mobile-mcp] | [Android-MCP] | [android-mcp-server] | [adb-mcp] | [droidrun-mcp] |
 |---------|:-:|:-:|:-:|:-:|:-:|:-:|
-| MCP tools | 54 | 21 | 11 | 5 | 10 | 11 |
+| MCP tools | 55 | 21 | 11 | 5 | 10 | 11 |
 | Runs on the phone (no ADB) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
 | Action latency | 10-100 ms | 1-4 s | 1-4 s | 1-4 s | 1-4 s | 1-4 s |
 | Works over the internet | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
@@ -87,7 +88,11 @@ On the token efficiency side, ADB-based tools typically return raw `uiautomator`
 ### For Building
 - **JDK 17** (e.g., [Eclipse Temurin](https://adoptium.net/))
 - **Android SDK** with API 34 (Android 14)
+- **Android NDK** (for cross-compiling native binaries; install via SDK Manager: `sdkmanager "ndk;<version>"`)
 - **Gradle** 8.x (wrapper included, no global install needed)
+- **Go** (for compiling cloudflared tunnel binary; install from [go.dev/dl](https://go.dev/dl/))
+- **Rust/cargo** (for compiling ngrok native library; install from [rustup.rs](https://rustup.rs/))
+- **Maven** (for compiling ngrok Java library; install from [maven.apache.org](https://maven.apache.org/install.html))
 
 ### For Running
 - Android device or emulator running **Android 13+** (API 33+), targeting **Android 14** (API 34)
@@ -216,7 +221,7 @@ make clean
 make test-unit
 ```
 
-Runs JUnit 5 unit tests with MockK for mocking. Tests cover accessibility tree parsing, node finding, screenshot encoding, settings repository, network utilities, and all 54 MCP tool handlers.
+Runs JUnit 5 unit tests with MockK for mocking. Tests cover accessibility tree parsing, node finding, screenshot encoding, settings repository, network utilities, and all 55 MCP tool handlers.
 
 ### Integration Tests
 
@@ -272,7 +277,7 @@ graph TB
         subgraph McpServerService["McpServerService (Foreground Service)"]
             McpServer["McpServer (Ktor)"]
             McpServer -->|"Streamable HTTP /mcp"| SDK["SDK Server (MCP Kotlin SDK)"]
-            SDK -->|"54 MCP Tools"| Tools["Tool Handlers"]
+            SDK -->|"55 MCP Tools"| Tools["Tool Handlers"]
             TunnelMgr["TunnelManager (optional)"]
             TunnelMgr -->|"Cloudflare / ngrok"| PublicURL["Public HTTPS URL"]
         end
@@ -303,6 +308,10 @@ graph TB
             NotifListener["McpNotificationListenerService"]
         end
 
+        subgraph LocSvc["Location Services"]
+            LocProv["LocationProvider"]
+        end
+
         MainActivity["MainActivity (Compose UI)"]
 
         Tools --> Accessibility
@@ -310,6 +319,7 @@ graph TB
         Tools --> CameraSvc
         Tools --> IntentSvc
         Tools --> NotifSvc
+        Tools --> LocSvc
         MainActivity -->|"StateFlow (status)"| McpServerService
     end
 ```
@@ -490,6 +500,7 @@ Enable the tunnel in the app's "Remote Access" section. The public URL is displa
 - **Query All Packages**: For listing installed applications (`android_list_apps`)
 - **Kill Background Processes**: For closing background applications (`android_close_app`)
 - **Notification Listener**: Required for notification tools (user must enable manually in Settings > Notifications > Notification access)
+- **Location (Fine & Coarse)**: Required for `android_get_location` tool (runtime permission, system dialog)
 - **Storage Access Framework**: Per-location authorization via system file picker (for file tools)
 - No root access required
 
