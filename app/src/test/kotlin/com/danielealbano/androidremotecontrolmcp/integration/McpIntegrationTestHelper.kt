@@ -102,6 +102,8 @@ object McpIntegrationTestHelper {
         every { mockRootNode.packageName } returns packageName
         // Raw-node walk support: rawNodeExists() reads these properties directly
         // from AccessibilityNodeInfo without going through AccessibilityTreeParser.
+        // Return null/0/empty so the root node does not match any search criteria
+        // (individual tests that need a match will override these stubs).
         every { mockRootNode.text } returns null
         every { mockRootNode.contentDescription } returns null
         every { mockRootNode.viewIdResourceName } returns null
