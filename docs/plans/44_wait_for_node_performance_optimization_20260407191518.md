@@ -317,10 +317,10 @@ With these defaults, `rawNodeExists` will return `false` (no match). Tests that 
 
 #### Definition of Done
 
-- [ ] `setUp()` method has baseline raw node property stubs (`text`, `contentDescription`, `viewIdResourceName`, `className`, `childCount`, `availableExtraData`) returning null/0/empty.
-- [ ] All existing `WaitForNodeTool` tests are updated to work with the new two-phase poll loop.
-- [ ] All new tests listed above are implemented and passing.
-- [ ] No NEW `@Suppress` annotations are added to the test file (the existing `@file:Suppress("DEPRECATION")` at line 1 is pre-existing and out of scope).
+- [x] `setUp()` method has baseline raw node property stubs (`text`, `contentDescription`, `viewIdResourceName`, `className`, `childCount`, `availableExtraData`) returning null/0/empty.
+- [x] All existing `WaitForNodeTool` tests are updated to work with the new two-phase poll loop.
+- [x] All new tests listed above are implemented and passing.
+- [x] No NEW `@Suppress` annotations are added to the test file (the existing `@file:Suppress("DEPRECATION")` at line 1 is pre-existing and out of scope).
 
 ---
 
