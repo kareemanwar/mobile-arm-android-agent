@@ -1120,11 +1120,11 @@ Monitor geofence enter/exit transitions using Google Play Services GeofencingCli
 
 ### Acceptance Criteria
 
-- [ ] Geofence zones registered with `GeofencingClient`
-- [ ] Enter/exit transitions detected and dispatched as events
-- [ ] Works in background with `ACCESS_BACKGROUND_LOCATION`
-- [ ] Zones dynamically add/removable at runtime
-- [ ] `GeofenceTransitionReceiver` forwards raw event data to `EventChannelService` via intent
+- [x] Geofence zones registered with `GeofencingClient`
+- [x] Enter/exit transitions detected and dispatched as events
+- [ ] Works in background with `ACCESS_BACKGROUND_LOCATION` (permission declared in US9)
+- [x] Zones dynamically add/removable at runtime
+- [x] `GeofenceTransitionReceiver` forwards raw event data to `EventChannelService` via intent
 
 ### Task 8.1: GeofenceManager interface and implementation
 
@@ -1225,7 +1225,7 @@ class GeofenceManagerImpl @Inject constructor(
 `PendingIntent` uses `FLAG_MUTABLE` because `GeofencingClient` requires it to populate the intent with transition data. The receiver is not exported, mitigating the security concern.
 
 **Definition of Done**:
-- [ ] Geofences register/unregister with GeofencingClient
+- [x] Geofences register/unregister with GeofencingClient
 
 ### Task 8.2: GeofenceTransitionReceiver
 
@@ -1265,8 +1265,8 @@ class GeofenceTransitionReceiver : BroadcastReceiver() {
 ```
 
 **Definition of Done**:
-- [ ] Receiver extracts transition data and forwards via intent
-- [ ] No DI dependencies (uses intent-based forwarding)
+- [x] Receiver extracts transition data and forwards via intent
+- [x] No DI dependencies (uses intent-based forwarding)
 
 ### Task 8.3: GeofenceEventListener
 
@@ -1317,10 +1317,10 @@ class GeofenceEventListener(
 ```
 
 **Definition of Done**:
-- [ ] Geofences sync on start/updateConfig
-- [ ] Enter/exit transitions produce channel events via handleTransition
-- [ ] Zones survive app restart (re-registered on service start via syncGeofences)
-- [ ] Permission errors handled gracefully (GeofenceManager returns Result)
+- [x] Geofences sync on start/updateConfig
+- [x] Enter/exit transitions produce channel events via handleTransition
+- [x] Zones survive app restart (re-registered on service start via syncGeofences)
+- [x] Permission errors handled gracefully (GeofenceManager returns Result)
 
 ---
 
