@@ -785,10 +785,10 @@ Forward device notifications to the event channel, with filtering by app.
 
 ### Acceptance Criteria
 
-- [ ] `McpNotificationListenerService` emits `NotificationChangeEvent` on notification posted/removed
-- [ ] `NotificationEventListener` subscribes to events, applies filter, dispatches via `EventDispatcher`
-- [ ] Filter modes work correctly: ALL, WHITELIST, BLACKLIST
-- [ ] Notification data includes all fields from existing `NotificationData` model
+- [x] `McpNotificationListenerService` emits `NotificationChangeEvent` on notification posted/removed
+- [x] `NotificationEventListener` subscribes to events, applies filter, dispatches via `EventDispatcher`
+- [x] Filter modes work correctly: ALL, WHITELIST, BLACKLIST
+- [x] Notification data includes all fields from existing `NotificationData` model
 
 ### Task 6.1: Extract notification conversion to shared utility
 
@@ -839,8 +839,8 @@ private fun toNotificationData(
 The `appNameCache` parameter becomes unused after this change. The extractor manages its own cache internally. Remove the `appNameCache` parameter from the method signature and update all call sites within `NotificationProviderImpl`.
 
 **Definition of Done**:
-- [ ] Existing `NotificationProviderImpl` delegates to the extractor
-- [ ] Extractor is independently callable from McpNotificationListenerService
+- [x] Existing `NotificationProviderImpl` delegates to the extractor
+- [x] Extractor is independently callable from McpNotificationListenerService
 
 ### Task 6.2: McpNotificationListenerService event emission
 
@@ -878,8 +878,8 @@ override fun onNotificationRemoved(sbn: StatusBarNotification) {
 ```
 
 **Definition of Done**:
-- [ ] Events emitted on notification posted/removed
-- [ ] Empty notifications skipped on posted (consistent with existing provider)
+- [x] Events emitted on notification posted/removed
+- [x] Empty notifications skipped on posted (consistent with existing provider)
 
 ### Task 6.3: NotificationEventListener
 
@@ -937,9 +937,9 @@ class NotificationEventListener(
 Config reference is `@Volatile` for thread-safe reads from the collector coroutine while `updateConfig()` is called from the service's config observer.
 
 **Definition of Done**:
-- [ ] Notification events flow from system -> service -> listener -> dispatcher
-- [ ] Filtering correctly includes/excludes apps based on mode
-- [ ] Empty notifications are skipped (at the service emission level)
+- [x] Notification events flow from system -> service -> listener -> dispatcher
+- [x] Filtering correctly includes/excludes apps based on mode
+- [x] Empty notifications are skipped (at the service emission level)
 
 ---
 

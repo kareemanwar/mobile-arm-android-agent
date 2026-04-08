@@ -26,7 +26,6 @@ class NotificationProviderImpl
             limit: Int?,
         ): List<NotificationData> {
             val service = requireService()
-            val appNameCache = mutableMapOf<String, String>()
             val notifications =
                 service
                     .getNotifications()
@@ -39,7 +38,7 @@ class NotificationProviderImpl
                     }.filter { sbn -> hasContent(sbn.notification) }
                     .sortedByDescending { it.postTime }
                     .let { if (limit != null) it.take(limit) else it }
-            return notifications.map { toNotificationData(it, appNameCache) }
+            return notifications.map { toNotificationData(it) }
         }
 
         @Suppress("ReturnCount")
@@ -143,50 +142,8 @@ class NotificationProviderImpl
             McpNotificationListenerService.instance
                 ?: error("Notification listener service not available")
 
-        private fun toNotificationData(
-            sbn: StatusBarNotification,
-            appNameCache: MutableMap<String, String>,
-        ): NotificationData {
-            val notification = sbn.notification
-            val extras = notification.extras
-            val appName =
-                appNameCache.getOrPut(sbn.packageName) {
-                    val pm = context.packageManager
-                    try {
-                        pm
-                            .getApplicationLabel(
-                                pm.getApplicationInfo(sbn.packageName, PackageManager.ApplicationInfoFlags.of(0)),
-                            ).toString()
-                    } catch (_: PackageManager.NameNotFoundException) {
-                        Logger.d(TAG, "App not found for ${sbn.packageName}, using package name")
-                        sbn.packageName
-                    }
-                }
-            val actions =
-                notification.actions?.mapIndexed { index, action ->
-                    NotificationActionData(
-                        actionId = computeActionHash(sbn.key, index),
-                        index = index,
-                        title = action.title?.toString() ?: "",
-                        acceptsText = action.remoteInputs?.any { !it.isDataOnly } ?: false,
-                    )
-                } ?: emptyList()
-            return NotificationData(
-                notificationId = computeNotificationHash(sbn.key),
-                packageName = sbn.packageName,
-                appName = appName,
-                title = extras.getCharSequence(Notification.EXTRA_TITLE)?.toString(),
-                text = extras.getCharSequence(Notification.EXTRA_TEXT)?.toString(),
-                bigText = extras.getCharSequence(Notification.EXTRA_BIG_TEXT)?.toString(),
-                subText = extras.getCharSequence(Notification.EXTRA_SUB_TEXT)?.toString(),
-                timestamp = sbn.postTime,
-                isOngoing = notification.flags and Notification.FLAG_ONGOING_EVENT != 0,
-                isClearable = sbn.isClearable,
-                category = notification.category,
-                groupKey = sbn.groupKey,
-                actions = actions,
-            )
-        }
+        private fun toNotificationData(sbn: StatusBarNotification): NotificationData =
+            NotificationDataExtractor.extract(sbn, context)
 
         private fun findActionByHash(actionId: String): Pair<StatusBarNotification, Notification.Action>? {
             val service = requireService()

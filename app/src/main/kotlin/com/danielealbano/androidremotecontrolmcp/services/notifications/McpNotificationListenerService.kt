@@ -2,7 +2,13 @@ package com.danielealbano.androidremotecontrolmcp.services.notifications
 
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
+import com.danielealbano.androidremotecontrolmcp.data.model.NotificationChangeEvent
+import com.danielealbano.androidremotecontrolmcp.data.model.NotificationChangeType
 import com.danielealbano.androidremotecontrolmcp.utils.Logger
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 class McpNotificationListenerService : NotificationListenerService() {
     override fun onListenerConnected() {
@@ -26,6 +32,23 @@ class McpNotificationListenerService : NotificationListenerService() {
     override fun onLowMemory() {
         super.onLowMemory()
         Logger.w(TAG, "Low memory condition reported")
+    }
+
+    override fun onNotificationPosted(sbn: StatusBarNotification) {
+        val data = NotificationDataExtractor.extract(sbn, applicationContext)
+        if (data.title == null && data.text == null && data.bigText == null && data.actions.isEmpty()) {
+            return
+        }
+        _notificationChangeEvents.tryEmit(
+            NotificationChangeEvent(NotificationChangeType.POSTED, data),
+        )
+    }
+
+    override fun onNotificationRemoved(sbn: StatusBarNotification) {
+        val data = NotificationDataExtractor.extract(sbn, applicationContext)
+        _notificationChangeEvents.tryEmit(
+            NotificationChangeEvent(NotificationChangeType.REMOVED, data),
+        )
     }
 
     @Suppress("DEPRECATION")
@@ -53,5 +76,13 @@ class McpNotificationListenerService : NotificationListenerService() {
         @Volatile
         var instance: McpNotificationListenerService? = null
             private set
+
+        private val _notificationChangeEvents =
+            MutableSharedFlow<NotificationChangeEvent>(
+                extraBufferCapacity = 64,
+                onBufferOverflow = BufferOverflow.DROP_OLDEST,
+            )
+        val notificationChangeEvents: SharedFlow<NotificationChangeEvent> =
+            _notificationChangeEvents.asSharedFlow()
     }
 }
