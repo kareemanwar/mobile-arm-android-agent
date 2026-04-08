@@ -398,10 +398,10 @@ Define data models for event channel configuration, channel events, and notifica
 
 ### Acceptance Criteria
 
-- [ ] All persisted data models are `@Serializable` (kotlinx.serialization)
-- [ ] Default values match what was agreed (channel disabled by default, etc.)
-- [ ] Models support JSON serialization/deserialization for DataStore persistence
-- [ ] `ChannelConnectionStatus` uses `data object` for consistency with existing `ServerStatus`
+- [x] All persisted data models are `@Serializable` (kotlinx.serialization)
+- [x] Default values match what was agreed (channel disabled by default, etc.)
+- [x] Models support JSON serialization/deserialization for DataStore persistence
+- [x] `ChannelConnectionStatus` uses `data object` for consistency with existing `ServerStatus`
 
 ### Task 3.1: Event channel configuration models
 
@@ -491,8 +491,8 @@ sealed class ChannelConnectionStatus {
 Uses `data object` for consistency with existing `ServerStatus` pattern.
 
 **Definition of Done**:
-- [ ] All model classes compile
-- [ ] JSON serialization round-trips correctly for all `@Serializable` models
+- [x] All model classes compile
+- [x] JSON serialization round-trips correctly for all `@Serializable` models
 
 ### Task 3.2: Channel event models
 
@@ -575,8 +575,8 @@ object ChannelEventFactory {
 ```
 
 **Definition of Done**:
-- [ ] Factory produces valid JSON for all three event types
-- [ ] All NotificationData fields present in notification event data
+- [x] Factory produces valid JSON for all three event types
+- [x] All NotificationData fields present in notification event data
 
 ### Task 3.3: Notification change event model
 
@@ -597,7 +597,7 @@ enum class NotificationChangeType {
 Internal model — not serialized to JSON, not persisted.
 
 **Definition of Done**:
-- [ ] Model compiles and can hold NotificationData instances
+- [x] Model compiles and can hold NotificationData instances
 
 ---
 
