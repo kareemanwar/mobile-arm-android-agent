@@ -33,6 +33,7 @@ class ChannelViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
     private val appManager = mockk<AppManager>(relaxed = true)
+    private val appIconCache = mockk<com.danielealbano.androidremotecontrolmcp.services.apps.AppIconCache>(relaxed = true)
     private val appContext = mockk<Context>(relaxed = true)
 
     private val configFlow = MutableStateFlow(EventChannelConfig())
@@ -44,7 +45,7 @@ class ChannelViewModelTest {
         Dispatchers.setMain(testDispatcher)
         every { settingsRepository.eventChannelConfig } returns configFlow
         coEvery { settingsRepository.getEventChannelConfig() } answers { configFlow.value }
-        viewModel = ChannelViewModel(settingsRepository, appManager, appContext, testDispatcher)
+        viewModel = ChannelViewModel(settingsRepository, appManager, appIconCache, appContext, testDispatcher)
     }
 
     @AfterEach

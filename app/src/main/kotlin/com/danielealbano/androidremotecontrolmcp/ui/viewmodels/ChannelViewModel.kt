@@ -4,6 +4,7 @@ package com.danielealbano.androidremotecontrolmcp.ui.viewmodels
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.danielealbano.androidremotecontrolmcp.data.model.AppInfo
@@ -13,6 +14,7 @@ import com.danielealbano.androidremotecontrolmcp.data.model.GeofenceZone
 import com.danielealbano.androidremotecontrolmcp.data.model.NotificationFilterMode
 import com.danielealbano.androidremotecontrolmcp.data.repository.SettingsRepository
 import com.danielealbano.androidremotecontrolmcp.di.IoDispatcher
+import com.danielealbano.androidremotecontrolmcp.services.apps.AppIconCache
 import com.danielealbano.androidremotecontrolmcp.services.apps.AppManager
 import com.danielealbano.androidremotecontrolmcp.services.channel.EventChannelService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,6 +34,7 @@ class ChannelViewModel
     constructor(
         private val settingsRepository: SettingsRepository,
         private val appManager: AppManager,
+        private val appIconCache: AppIconCache,
         @ApplicationContext private val appContext: Context,
         @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
     ) : ViewModel() {
@@ -44,6 +47,9 @@ class ChannelViewModel
 
         private val _installedApps = MutableStateFlow<List<AppInfo>>(emptyList())
         val installedApps: StateFlow<List<AppInfo>> = _installedApps.asStateFlow()
+
+        private val _appIcons = MutableStateFlow<Map<String, Bitmap>>(emptyMap())
+        val appIcons: StateFlow<Map<String, Bitmap>> = _appIcons.asStateFlow()
 
         private val _endpointUrlInput = MutableStateFlow("")
         val endpointUrlInput: StateFlow<String> = _endpointUrlInput.asStateFlow()
@@ -183,8 +189,25 @@ class ChannelViewModel
 
         fun loadInstalledApps() {
             viewModelScope.launch(ioDispatcher) {
-                val apps = appManager.listInstalledApps()
-                _installedApps.value = apps.sortedBy { it.name.lowercase() }
+                val pm = appContext.packageManager
+                val apps =
+                    appManager
+                        .listInstalledApps()
+                        .filter { app ->
+                            pm.getLaunchIntentForPackage(app.packageId) != null &&
+                                app.name.isNotBlank() &&
+                                app.name != app.packageId
+                        }
+                val sorted = apps.sortedBy { it.name.lowercase() }
+
+                // Show the list immediately — icons come from AppIconCache
+                _installedApps.value = sorted
+                _appIcons.value = appIconCache.getAll()
+
+                // Load any uncached icons in background, update UI when each chunk completes
+                appIconCache.loadMissing(sorted.map { it.packageId }) {
+                    _appIcons.value = appIconCache.getAll()
+                }
             }
         }
 

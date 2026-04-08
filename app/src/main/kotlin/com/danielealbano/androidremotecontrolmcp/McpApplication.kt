@@ -4,13 +4,19 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.util.Log
+import com.danielealbano.androidremotecontrolmcp.services.apps.AppIconCache
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
 class McpApplication : Application() {
+    @Inject
+    lateinit var appIconCache: AppIconCache
+
     override fun onCreate() {
         super.onCreate()
         createNotificationChannels()
+        appIconCache.preload()
         Log.i(TAG, "Application initialized, notification channels created")
     }
 

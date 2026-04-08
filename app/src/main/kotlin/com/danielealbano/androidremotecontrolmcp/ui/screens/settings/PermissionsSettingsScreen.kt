@@ -198,7 +198,7 @@ fun PermissionsSettingsScreen(
 
             val isBackgroundLocationGranted by viewModel.isBackgroundLocationGranted.collectAsStateWithLifecycle()
             PermissionRow(
-                label = "Background Location (Geofence)",
+                label = "Background Location",
                 isEnabled = isBackgroundLocationGranted,
                 buttonText =
                     if (isBackgroundLocationGranted) {
