@@ -64,6 +64,19 @@ class ChannelViewModelTest {
     }
 
     @Nested
+    @DisplayName("channel enabled")
+    inner class ChannelEnabled {
+        @Test
+        fun `updateChannelEnabled delegates to repository`() =
+            runTest {
+                advanceUntilIdle()
+                viewModel.updateChannelEnabled(true)
+                advanceUntilIdle()
+                coVerify { settingsRepository.updateEventChannelEnabled(true) }
+            }
+    }
+
+    @Nested
     @DisplayName("endpoint URL")
     inner class EndpointUrl {
         @Test

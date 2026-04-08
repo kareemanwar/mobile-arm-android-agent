@@ -88,12 +88,13 @@ class NotificationEventListenerTest {
     @DisplayName("lifecycle")
     inner class Lifecycle {
         @Test
-        fun `stop cancels collection`() {
+        fun `stop is safe to call without start`() {
             val dispatcher = createMockDispatcher()
             val listener = NotificationEventListener(dispatcher, mockk(relaxed = true))
+            // Calling stop before start should not throw
             listener.stop()
-            // Should not throw — safe to call without start
-            assertNull(null) // Verify no exception
+            // Calling stop again should also be safe (idempotent)
+            listener.stop()
         }
     }
 

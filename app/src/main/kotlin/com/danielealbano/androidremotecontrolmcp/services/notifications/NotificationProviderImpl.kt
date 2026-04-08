@@ -38,7 +38,7 @@ class NotificationProviderImpl
                     }.filter { sbn -> hasContent(sbn.notification) }
                     .sortedByDescending { it.postTime }
                     .let { if (limit != null) it.take(limit) else it }
-            return notifications.map { toNotificationData(it) }
+            return notifications.map { NotificationDataExtractor.extract(it, context) }
         }
 
         @Suppress("ReturnCount")
@@ -141,9 +141,6 @@ class NotificationProviderImpl
         private fun requireService(): McpNotificationListenerService =
             McpNotificationListenerService.instance
                 ?: error("Notification listener service not available")
-
-        @Suppress("MaxLineLength")
-        private fun toNotificationData(sbn: StatusBarNotification): NotificationData = NotificationDataExtractor.extract(sbn, context)
 
         private fun findActionByHash(actionId: String): Pair<StatusBarNotification, Notification.Action>? {
             val service = requireService()

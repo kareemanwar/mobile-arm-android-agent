@@ -2,7 +2,9 @@ package com.danielealbano.androidremotecontrolmcp.services.channel
 
 import com.danielealbano.androidremotecontrolmcp.data.model.ChannelConnectionStatus
 import com.danielealbano.androidremotecontrolmcp.data.model.EventChannelConfig
+import com.danielealbano.androidremotecontrolmcp.data.model.GeofenceChannelConfig
 import com.danielealbano.androidremotecontrolmcp.data.model.NotificationChannelConfig
+import com.danielealbano.androidremotecontrolmcp.data.model.WifiChannelConfig
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -16,19 +18,24 @@ class EventChannelServiceTest {
     @DisplayName("config validation")
     inner class ConfigValidation {
         @Test
-        fun `empty endpoint url should prevent start`() {
+        fun `empty endpoint url is blank`() {
             val config = EventChannelConfig(enabled = true, endpointUrl = "", authToken = "token")
             assertTrue(config.endpointUrl.isBlank())
         }
 
         @Test
-        fun `empty auth token should prevent start`() {
-            val config = EventChannelConfig(enabled = true, endpointUrl = "http://localhost:9090", authToken = "")
+        fun `empty auth token is blank`() {
+            val config =
+                EventChannelConfig(
+                    enabled = true,
+                    endpointUrl = "http://localhost:9090",
+                    authToken = "",
+                )
             assertTrue(config.authToken.isBlank())
         }
 
         @Test
-        fun `valid config allows start`() {
+        fun `valid config has non-blank endpoint and token`() {
             val config =
                 EventChannelConfig(
                     enabled = true,
@@ -37,6 +44,12 @@ class EventChannelServiceTest {
                 )
             assertFalse(config.endpointUrl.isBlank())
             assertFalse(config.authToken.isBlank())
+        }
+
+        @Test
+        fun `whitespace-only endpoint is blank`() {
+            val config = EventChannelConfig(enabled = true, endpointUrl = "   ", authToken = "token")
+            assertTrue(config.endpointUrl.isBlank())
         }
     }
 
@@ -50,10 +63,10 @@ class EventChannelServiceTest {
     }
 
     @Nested
-    @DisplayName("listener configuration")
-    inner class ListenerConfiguration {
+    @DisplayName("listener configuration logic")
+    inner class ListenerConfigurationLogic {
         @Test
-        fun `config with notifications enabled requires notification listener`() {
+        fun `config with notifications enabled requires notification listener creation`() {
             val config =
                 EventChannelConfig(
                     enabled = true,
@@ -62,10 +75,12 @@ class EventChannelServiceTest {
                     notifications = NotificationChannelConfig(enabled = true),
                 )
             assertTrue(config.notifications.enabled)
+            assertFalse(config.wifi.enabled)
+            assertFalse(config.geofence.enabled)
         }
 
         @Test
-        fun `config with all listeners disabled has no active sources`() {
+        fun `config with all listeners disabled means no active sources`() {
             val config =
                 EventChannelConfig(
                     enabled = true,
@@ -78,9 +93,53 @@ class EventChannelServiceTest {
         }
 
         @Test
-        fun `disabled channel config should trigger stop`() {
+        fun `config with all listeners enabled means three active sources`() {
+            val config =
+                EventChannelConfig(
+                    enabled = true,
+                    endpointUrl = "http://localhost:9090",
+                    authToken = "token",
+                    notifications = NotificationChannelConfig(enabled = true),
+                    wifi = WifiChannelConfig(enabled = true),
+                    geofence = GeofenceChannelConfig(enabled = true),
+                )
+            assertTrue(config.notifications.enabled)
+            assertTrue(config.wifi.enabled)
+            assertTrue(config.geofence.enabled)
+        }
+
+        @Test
+        fun `disabled channel config should stop service`() {
             val config = EventChannelConfig(enabled = false)
             assertFalse(config.enabled)
+        }
+    }
+
+    @Nested
+    @DisplayName("action constants")
+    inner class ActionConstants {
+        @Test
+        fun `ACTION_START is correctly defined`() {
+            assertEquals(
+                "com.danielealbano.androidremotecontrolmcp.channel.START",
+                EventChannelService.ACTION_START,
+            )
+        }
+
+        @Test
+        fun `ACTION_STOP is correctly defined`() {
+            assertEquals(
+                "com.danielealbano.androidremotecontrolmcp.channel.STOP",
+                EventChannelService.ACTION_STOP,
+            )
+        }
+
+        @Test
+        fun `ACTION_GEOFENCE_EVENT is correctly defined`() {
+            assertEquals(
+                "com.danielealbano.androidremotecontrolmcp.channel.GEOFENCE_EVENT",
+                EventChannelService.ACTION_GEOFENCE_EVENT,
+            )
         }
     }
 }
