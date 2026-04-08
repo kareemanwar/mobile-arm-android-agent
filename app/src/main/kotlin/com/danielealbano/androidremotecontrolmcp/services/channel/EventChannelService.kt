@@ -73,8 +73,19 @@ class EventChannelService : Service() {
 
             eventDispatcher.start(config.endpointUrl, config.authToken)
 
+            // Immediate health check on start
+            eventDispatcher.healthCheck()
+
             serviceScope.launch {
                 eventDispatcher.connectionStatus.collect { _serviceStatus.value = it }
+            }
+
+            // Periodic health check every 30 seconds
+            serviceScope.launch {
+                while (true) {
+                    kotlinx.coroutines.delay(HEALTH_CHECK_INTERVAL_MS)
+                    eventDispatcher.healthCheck()
+                }
             }
 
             startListeners(config)
@@ -198,6 +209,7 @@ class EventChannelService : Service() {
         private const val NOTIFICATION_ID = 2
         private const val CHANNEL_ID = "event_channel_status"
         private const val TAG = "MCP:EventChannelService"
+        private const val HEALTH_CHECK_INTERVAL_MS = 30_000L
 
         private val _serviceStatus =
             MutableStateFlow<ChannelConnectionStatus>(ChannelConnectionStatus.Idle)

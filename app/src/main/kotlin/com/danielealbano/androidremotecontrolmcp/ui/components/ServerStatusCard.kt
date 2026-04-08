@@ -1,4 +1,4 @@
-@file:Suppress("FunctionNaming", "MagicNumber", "UnusedPrivateMember", "LongMethod")
+@file:Suppress("FunctionNaming", "MagicNumber", "UnusedPrivateMember", "LongMethod", "LongParameterList")
 
 package com.danielealbano.androidremotecontrolmcp.ui.components
 
@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,6 +30,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.danielealbano.androidremotecontrolmcp.R
+import com.danielealbano.androidremotecontrolmcp.data.model.ChannelConnectionStatus
 import com.danielealbano.androidremotecontrolmcp.data.model.ServerStatus
 import com.danielealbano.androidremotecontrolmcp.ui.theme.AndroidRemoteControlMcpTheme
 
@@ -37,21 +39,15 @@ private const val ANIMATION_DURATION_MS = 300
 
 @Composable
 fun ServerStatusCard(
-    status: ServerStatus,
-    onStartClick: () -> Unit,
-    onStopClick: () -> Unit,
+    serverStatus: ServerStatus,
+    channelStatus: ChannelConnectionStatus,
+    channelEnabled: Boolean,
+    onMcpStartClick: () -> Unit,
+    onMcpStopClick: () -> Unit,
+    onChannelStartClick: () -> Unit,
+    onChannelStopClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val statusColor by animateColorAsState(
-        targetValue = statusToColor(status, isSystemInDarkTheme()),
-        animationSpec = tween(durationMillis = ANIMATION_DURATION_MS),
-        label = "statusColor",
-    )
-
-    val statusText = statusToText(status)
-    val isRunning = status is ServerStatus.Running
-    val canToggle = status is ServerStatus.Running || status is ServerStatus.Stopped
-
     ElevatedCard(
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -59,58 +55,96 @@ fun ServerStatusCard(
             modifier = Modifier.padding(16.dp),
         ) {
             Text(
-                text = stringResource(R.string.server_status_title),
+                text = "Services Status",
                 style = MaterialTheme.typography.titleLarge,
             )
 
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Canvas(
-                        modifier =
-                            Modifier
-                                .size(STATUS_DOT_SIZE_DP.dp)
-                                .semantics {
-                                    contentDescription = "Server status indicator: $statusText"
-                                },
-                    ) {
-                        drawCircle(color = statusColor)
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = statusText,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
-                }
+            Spacer(Modifier.height(12.dp))
 
-                FilledTonalButton(
-                    onClick = if (isRunning) onStopClick else onStartClick,
-                    enabled = canToggle,
-                ) {
-                    Text(
-                        text =
-                            if (isRunning) {
-                                stringResource(R.string.server_action_stop)
-                            } else {
-                                stringResource(R.string.server_action_start)
-                            },
-                    )
-                }
-            }
+            // MCP Server row
+            ServiceRow(
+                label = "MCP Server",
+                statusText = serverStatusToText(serverStatus),
+                statusColor = serverStatusToColor(serverStatus, isSystemInDarkTheme()),
+                buttonText = if (serverStatus is ServerStatus.Running) "Stop" else "Start",
+                buttonEnabled = serverStatus is ServerStatus.Running || serverStatus is ServerStatus.Stopped,
+                onButtonClick = if (serverStatus is ServerStatus.Running) onMcpStopClick else onMcpStartClick,
+            )
+
+            Spacer(Modifier.height(8.dp))
+
+            // Event Channel row
+            ServiceRow(
+                label = "Event Channel",
+                statusText = channelStatusToText(channelStatus, channelEnabled),
+                statusColor = channelStatusToColor(channelStatus, channelEnabled, isSystemInDarkTheme()),
+                buttonText = if (channelEnabled) "Stop" else "Start",
+                buttonEnabled = true,
+                onButtonClick = if (channelEnabled) onChannelStopClick else onChannelStartClick,
+            )
         }
     }
 }
 
 @Composable
-private fun statusToText(status: ServerStatus): String =
+private fun ServiceRow(
+    label: String,
+    statusText: String,
+    statusColor: Color,
+    buttonText: String,
+    buttonEnabled: Boolean,
+    onButtonClick: () -> Unit,
+) {
+    val animatedColor by animateColorAsState(
+        targetValue = statusColor,
+        animationSpec = tween(durationMillis = ANIMATION_DURATION_MS),
+        label = "statusColor",
+    )
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.weight(1f),
+        ) {
+            Canvas(
+                modifier =
+                    Modifier
+                        .size(STATUS_DOT_SIZE_DP.dp)
+                        .semantics {
+                            contentDescription = "$label status: $statusText"
+                        },
+            ) {
+                drawCircle(color = animatedColor)
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Column {
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+                Text(
+                    text = statusText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+
+        FilledTonalButton(
+            onClick = onButtonClick,
+            enabled = buttonEnabled,
+        ) {
+            Text(text = buttonText)
+        }
+    }
+}
+
+@Composable
+private fun serverStatusToText(status: ServerStatus): String =
     when (status) {
         is ServerStatus.Running -> stringResource(R.string.server_status_running)
         is ServerStatus.Stopped -> stringResource(R.string.server_status_stopped)
@@ -119,7 +153,7 @@ private fun statusToText(status: ServerStatus): String =
         is ServerStatus.Error -> stringResource(R.string.server_status_error, status.message)
     }
 
-private fun statusToColor(
+private fun serverStatusToColor(
     status: ServerStatus,
     isDarkTheme: Boolean,
 ): Color =
@@ -141,14 +175,56 @@ private fun statusToColor(
         }
     }
 
+@Composable
+private fun channelStatusToText(
+    status: ChannelConnectionStatus,
+    enabled: Boolean,
+): String =
+    if (!enabled) {
+        "Stopped"
+    } else {
+        when (status) {
+            is ChannelConnectionStatus.Idle -> "Idle"
+            is ChannelConnectionStatus.Active -> "Active"
+            is ChannelConnectionStatus.Error -> status.message
+        }
+    }
+
+private fun channelStatusToColor(
+    status: ChannelConnectionStatus,
+    enabled: Boolean,
+    isDarkTheme: Boolean,
+): Color =
+    if (!enabled) {
+        if (isDarkTheme) Color(0xFFEF5350) else Color(0xFFF44336)
+    } else {
+        when (status) {
+            is ChannelConnectionStatus.Idle -> {
+                Color.Gray
+            }
+
+            is ChannelConnectionStatus.Active -> {
+                if (isDarkTheme) Color(0xFF81C784) else Color(0xFF4CAF50)
+            }
+
+            is ChannelConnectionStatus.Error -> {
+                if (isDarkTheme) Color(0xFFFFB74D) else Color(0xFFFF9800)
+            }
+        }
+    }
+
 @Preview(showBackground = true)
 @Composable
 private fun ServerStatusCardStoppedPreview() {
     AndroidRemoteControlMcpTheme {
         ServerStatusCard(
-            status = ServerStatus.Stopped,
-            onStartClick = {},
-            onStopClick = {},
+            serverStatus = ServerStatus.Stopped,
+            channelStatus = ChannelConnectionStatus.Idle,
+            channelEnabled = false,
+            onMcpStartClick = {},
+            onMcpStopClick = {},
+            onChannelStartClick = {},
+            onChannelStopClick = {},
         )
     }
 }

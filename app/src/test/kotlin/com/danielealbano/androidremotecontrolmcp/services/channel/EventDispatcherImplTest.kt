@@ -9,6 +9,7 @@ import io.ktor.server.netty.Netty
 import io.ktor.server.request.header
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
+import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import kotlinx.coroutines.test.runTest
@@ -194,6 +195,61 @@ class EventDispatcherImplTest {
                 val dispatcher = EventDispatcherImpl()
                 dispatcher.start("http://localhost:1", "test-token")
                 val result = dispatcher.dispatch(testEvent)
+                assertTrue(result.isFailure)
+                assertTrue(dispatcher.connectionStatus.value is ChannelConnectionStatus.Error)
+            }
+    }
+
+    @Nested
+    @DisplayName("health check")
+    inner class HealthCheck {
+        @Test
+        fun `healthCheck before start returns failure`() =
+            runTest {
+                val dispatcher = EventDispatcherImpl()
+                val result = dispatcher.healthCheck()
+                assertTrue(result.isFailure)
+                assertTrue(result.exceptionOrNull() is IllegalStateException)
+            }
+
+        @Test
+        fun `healthCheck updates status to Active on success`() =
+            runTest {
+                val server =
+                    embeddedServer(Netty, port = 0) {
+                        routing {
+                            get("/health") {
+                                call.respond(HttpStatusCode.OK, """{"status":"ok"}""")
+                            }
+                        }
+                    }
+                server.start(wait = false)
+                val port =
+                    server.engine
+                        .resolvedConnectors()
+                        .first()
+                        .port
+
+                try {
+                    val dispatcher = EventDispatcherImpl()
+                    dispatcher.start("http://localhost:$port", "token")
+                    val result = dispatcher.healthCheck()
+
+                    assertTrue(result.isSuccess)
+                    assertEquals(ChannelConnectionStatus.Active, dispatcher.connectionStatus.value)
+                    dispatcher.stop()
+                } finally {
+                    server.stop(0, 0)
+                }
+            }
+
+        @Test
+        fun `healthCheck updates status to Error on failure`() =
+            runTest {
+                val dispatcher = EventDispatcherImpl()
+                dispatcher.start("http://localhost:1", "token")
+                val result = dispatcher.healthCheck()
+
                 assertTrue(result.isFailure)
                 assertTrue(dispatcher.connectionStatus.value is ChannelConnectionStatus.Error)
             }

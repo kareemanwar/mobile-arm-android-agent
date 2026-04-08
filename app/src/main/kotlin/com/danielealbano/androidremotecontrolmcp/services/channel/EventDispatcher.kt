@@ -9,6 +9,8 @@ interface EventDispatcher {
 
     suspend fun dispatch(event: ChannelEvent): Result<Unit>
 
+    suspend fun healthCheck(): Result<Unit>
+
     fun start(
         endpointUrl: String,
         authToken: String,

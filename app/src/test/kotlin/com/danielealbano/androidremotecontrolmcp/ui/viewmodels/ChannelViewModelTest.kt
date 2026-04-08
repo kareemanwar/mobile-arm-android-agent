@@ -77,6 +77,19 @@ class ChannelViewModelTest {
     }
 
     @Nested
+    @DisplayName("auth token")
+    inner class AuthToken {
+        @Test
+        fun `updateAuthToken persists to repository`() =
+            runTest {
+                advanceUntilIdle()
+                viewModel.updateAuthToken("my-new-token")
+                advanceUntilIdle()
+                coVerify { settingsRepository.updateEventChannelAuthToken("my-new-token") }
+            }
+    }
+
+    @Nested
     @DisplayName("endpoint URL")
     inner class EndpointUrl {
         @Test

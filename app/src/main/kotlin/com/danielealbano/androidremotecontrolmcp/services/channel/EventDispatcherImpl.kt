@@ -6,6 +6,7 @@ import com.danielealbano.androidremotecontrolmcp.utils.Logger
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -95,6 +96,32 @@ class EventDispatcherImpl
                     val msg = e.message ?: "Unknown error"
                     _connectionStatus.value = ChannelConnectionStatus.Error(msg)
                     Logger.w(TAG, "Dispatch error: $msg")
+                    Result.failure(e)
+                }
+            }
+
+        override suspend fun healthCheck(): Result<Unit> =
+            withContext(Dispatchers.IO) {
+                val httpClient =
+                    client
+                        ?: return@withContext Result.failure(
+                            IllegalStateException("Dispatcher not started"),
+                        )
+                try {
+                    val response: HttpResponse = httpClient.get("$endpointUrl/health")
+                    if (response.status.isSuccess()) {
+                        _connectionStatus.value = ChannelConnectionStatus.Active
+                        Result.success(Unit)
+                    } else {
+                        val msg = "Health check failed: HTTP ${response.status.value}"
+                        _connectionStatus.value = ChannelConnectionStatus.Error(msg)
+                        Result.failure(IOException(msg))
+                    }
+                } catch (
+                    @Suppress("TooGenericExceptionCaught") e: Exception,
+                ) {
+                    val msg = e.message ?: "Unreachable"
+                    _connectionStatus.value = ChannelConnectionStatus.Error(msg)
                     Result.failure(e)
                 }
             }

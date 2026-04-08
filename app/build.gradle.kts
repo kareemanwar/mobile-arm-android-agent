@@ -81,13 +81,6 @@ ktlint {
     version.set("1.8.0")
 }
 
-// Load local.properties for secrets (e.g., MAPS_API_KEY)
-val localProperties = Properties()
-val localPropsFile = rootProject.file("local.properties")
-if (localPropsFile.exists()) {
-    localProperties.load(FileInputStream(localPropsFile))
-}
-
 android {
     namespace = "com.danielealbano.androidremotecontrolmcp"
     compileSdk = 36
@@ -98,8 +91,6 @@ android {
         targetSdk = 34
         versionCode = versionCodeProp
         versionName = versionNameProp
-
-        manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY", "")
     }
 
     // Release signing configuration (optional, uses keystore.properties if present)
@@ -213,10 +204,9 @@ dependencies {
 
     // Google Play Services
     implementation(libs.play.services.location)
-    implementation(libs.play.services.maps)
 
-    // Google Maps Compose
-    implementation(libs.maps.compose)
+    // OpenStreetMap
+    implementation(libs.osmdroid)
 
     // Ktor Server
     implementation(libs.ktor.server.core)

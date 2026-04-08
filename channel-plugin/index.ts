@@ -67,11 +67,19 @@ Bun.serve({
   port: LISTEN_PORT,
   hostname: "127.0.0.1",
   async fetch(req: Request): Promise<Response> {
+    const url = new URL(req.url);
+
+    // Health check — no auth required
+    if (req.method === "GET" && url.pathname === "/health") {
+      return new Response(JSON.stringify({ status: "ok" }), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     if (req.method !== "POST") {
       return new Response("Method not allowed", { status: 405 });
     }
 
-    const url = new URL(req.url);
     if (url.pathname !== "/event") {
       return new Response("Not found", { status: 404 });
     }

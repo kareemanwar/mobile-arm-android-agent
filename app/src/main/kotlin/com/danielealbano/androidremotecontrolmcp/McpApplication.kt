@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.util.Log
 import com.danielealbano.androidremotecontrolmcp.services.apps.AppIconCache
 import dagger.hilt.android.HiltAndroidApp
+import org.osmdroid.config.Configuration
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -16,8 +17,16 @@ class McpApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         createNotificationChannels()
+        configureOsmdroid()
         appIconCache.preload()
         Log.i(TAG, "Application initialized, notification channels created")
+    }
+
+    private fun configureOsmdroid() {
+        val osmConfig = Configuration.getInstance()
+        osmConfig.userAgentValue = packageName
+        osmConfig.osmdroidBasePath = filesDir
+        osmConfig.osmdroidTileCache = cacheDir.resolve("osmdroid")
     }
 
     private fun createNotificationChannels() {

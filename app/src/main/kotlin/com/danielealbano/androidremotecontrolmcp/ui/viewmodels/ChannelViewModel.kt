@@ -85,6 +85,13 @@ class ChannelViewModel
             }
         }
 
+        fun updateAuthToken(token: String) {
+            _authTokenInput.value = token
+            viewModelScope.launch(ioDispatcher) {
+                settingsRepository.updateEventChannelAuthToken(token)
+            }
+        }
+
         fun generateNewAuthToken() {
             viewModelScope.launch(ioDispatcher) {
                 settingsRepository.generateNewEventChannelAuthToken()

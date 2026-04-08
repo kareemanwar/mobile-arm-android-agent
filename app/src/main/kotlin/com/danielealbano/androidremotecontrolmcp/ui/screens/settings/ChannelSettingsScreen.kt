@@ -12,10 +12,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -70,10 +74,7 @@ fun ChannelSettingsScreen(
         },
     ) { padding ->
         LazyColumn(
-            modifier =
-                Modifier
-                    .padding(padding)
-                    .padding(horizontal = 16.dp),
+            modifier = Modifier.padding(padding),
         ) {
             item {
                 ListItem(
@@ -94,18 +95,17 @@ fun ChannelSettingsScreen(
                     isError = endpointUrlError != null,
                     supportingText = endpointUrlError?.let { { Text(it) } },
                     enabled = !isRunning,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     singleLine = true,
                 )
             }
             item {
                 OutlinedTextField(
                     value = authTokenInput,
-                    onValueChange = {},
+                    onValueChange = { viewModel.updateAuthToken(it) },
                     label = { Text("Auth Token") },
-                    readOnly = true,
                     enabled = !isRunning,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                     singleLine = true,
                     visualTransformation =
                         if (tokenVisible) {
@@ -137,22 +137,23 @@ fun ChannelSettingsScreen(
                 )
             }
             item {
-                Column(modifier = Modifier.padding(top = 16.dp)) {
-                    Text(
-                        "Event Sources",
-                        modifier = Modifier.padding(bottom = 8.dp),
-                    )
-                }
+                Text(
+                    "Event Sources",
+                    modifier = Modifier.padding(start = 16.dp, top = 16.dp, bottom = 8.dp),
+                )
             }
             item {
                 ListItem(
                     headlineContent = { Text("Notification Events") },
+                    leadingContent = { Icon(Icons.Default.Notifications, contentDescription = null) },
                     trailingContent = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Switch(
                                 checked = config.notifications.enabled,
                                 onCheckedChange = { viewModel.updateNotificationChannelEnabled(it) },
                             )
+                            Spacer(Modifier.width(4.dp))
+                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
                         }
                     },
                     modifier = Modifier.clickable(onClick = onNavigateToNotificationFilter),
@@ -161,11 +162,16 @@ fun ChannelSettingsScreen(
             item {
                 ListItem(
                     headlineContent = { Text("WiFi Events") },
+                    leadingContent = { Icon(Icons.Default.Wifi, contentDescription = null) },
                     trailingContent = {
-                        Switch(
-                            checked = config.wifi.enabled,
-                            onCheckedChange = { viewModel.updateWifiChannelEnabled(it) },
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Switch(
+                                checked = config.wifi.enabled,
+                                onCheckedChange = { viewModel.updateWifiChannelEnabled(it) },
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+                        }
                     },
                     modifier = Modifier.clickable(onClick = onNavigateToWifiMonitor),
                 )
@@ -173,11 +179,16 @@ fun ChannelSettingsScreen(
             item {
                 ListItem(
                     headlineContent = { Text("Geofence Events") },
+                    leadingContent = { Icon(Icons.Default.LocationOn, contentDescription = null) },
                     trailingContent = {
-                        Switch(
-                            checked = config.geofence.enabled,
-                            onCheckedChange = { viewModel.updateGeofenceChannelEnabled(it) },
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Switch(
+                                checked = config.geofence.enabled,
+                                onCheckedChange = { viewModel.updateGeofenceChannelEnabled(it) },
+                            )
+                            Spacer(Modifier.width(4.dp))
+                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+                        }
                     },
                     modifier = Modifier.clickable(onClick = onNavigateToGeofenceList),
                 )
