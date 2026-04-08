@@ -949,11 +949,11 @@ Monitor WiFi networks for configured SSIDs and send discovery/loss/connection/di
 
 ### Acceptance Criteria
 
-- [ ] Detects WiFi scan results for configured SSIDs (discovered/lost)
-- [ ] Detects WiFi connection/disconnection for configured SSIDs
-- [ ] Events dispatched via `EventDispatcher`
-- [ ] WiFi scan throttling limitations documented in UI
-- [ ] `ACCESS_WIFI_STATE`, `CHANGE_WIFI_STATE`, and `NEARBY_WIFI_DEVICES` permissions declared
+- [x] Detects WiFi scan results for configured SSIDs (discovered/lost)
+- [x] Detects WiFi connection/disconnection for configured SSIDs
+- [x] Events dispatched via `EventDispatcher`
+- [ ] WiFi scan throttling limitations documented in UI (done in US10)
+- [ ] `ACCESS_WIFI_STATE`, `CHANGE_WIFI_STATE`, and `NEARBY_WIFI_DEVICES` permissions declared (done in US9)
 
 ### Task 7.1: WifiEventListener
 
@@ -1107,10 +1107,10 @@ class WifiEventListener(
 Uses `ConcurrentHashMap.newKeySet()` for thread-safe previously-seen set (BroadcastReceiver callback runs on main thread, set also accessed by `stop()`). Config reference is `@Volatile`. Application context stored in `appContext` field for receiver unregistration in `stop()`.
 
 **Definition of Done**:
-- [ ] Discovered/lost events fire based on scan results for configured SSIDs
-- [ ] Connected/disconnected events fire in real-time
-- [ ] Event type toggles are respected
-- [ ] Receivers/callbacks properly unregistered on stop
+- [x] Discovered/lost events fire based on scan results for configured SSIDs
+- [x] Connected/disconnected events fire in real-time
+- [x] Event type toggles are respected
+- [x] Receivers/callbacks properly unregistered on stop
 
 ---
 
