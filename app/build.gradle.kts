@@ -81,6 +81,13 @@ ktlint {
     version.set("1.8.0")
 }
 
+// Load local.properties for secrets (e.g., MAPS_API_KEY)
+val localProperties = Properties()
+val localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) {
+    localProperties.load(FileInputStream(localPropsFile))
+}
+
 android {
     namespace = "com.danielealbano.androidremotecontrolmcp"
     compileSdk = 36
@@ -91,6 +98,8 @@ android {
         targetSdk = 34
         versionCode = versionCodeProp
         versionName = versionNameProp
+
+        manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY", "")
     }
 
     // Release signing configuration (optional, uses keystore.properties if present)
@@ -202,8 +211,12 @@ dependencies {
     implementation(libs.camerax.lifecycle)
     implementation(libs.camerax.video)
 
-    // Google Play Services Location
+    // Google Play Services
     implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
+
+    // Google Maps Compose
+    implementation(libs.maps.compose)
 
     // Ktor Server
     implementation(libs.ktor.server.core)
@@ -211,6 +224,10 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.network.tls.certificates)
     implementation(libs.ktor.serialization.kotlinx.json)
+
+    // Ktor Client (Event Channel dispatcher — no Logging plugin, it would expose auth token)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.content.negotiation)
 
     // Force patched Netty to fix CVE-2026-33870 (HTTP Request Smuggling)
     // and CVE-2026-33871 (HTTP/2 CONTINUATION Frame Flood DoS).

@@ -47,6 +47,11 @@
         android:theme="@style/Theme.AndroidRemoteControlMcp"
         tools:targetApi="34">
 
+        <!-- Google Maps API key (loaded from local.properties) -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="${MAPS_API_KEY}" />
+
         <!-- Main Activity -->
         <activity
             android:name=".ui.MainActivity"

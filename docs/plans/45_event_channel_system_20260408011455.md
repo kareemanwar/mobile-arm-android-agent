@@ -308,9 +308,9 @@ Add required dependencies for the event channel system.
 
 ### Acceptance Criteria
 
-- [ ] All new dependencies added to version catalog and build.gradle.kts
-- [ ] Google Maps API key placeholder configured in manifest via local.properties
-- [ ] Project builds successfully with new dependencies
+- [x] All new dependencies added to version catalog and build.gradle.kts
+- [x] Google Maps API key placeholder configured in manifest via local.properties
+- [ ] Project builds successfully with new dependencies (verified at quality gates)
 
 ### Task 2.1: Version catalog entries
 
@@ -336,8 +336,8 @@ ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.r
 Note: `ktor-serialization-kotlinx-json` is already an `implementation` dependency. `ktor-client-content-negotiation` is currently `testImplementation` only — it must be added as `implementation`. `ktor-client-okhttp` transitively pulls `ktor-client-core`. `play-services-location` is already an `implementation` dependency (used by `LocationProvider`). Using OkHttp engine for Android app and CIO engine for JVM tests is intentional — OkHttp is the standard HTTP engine for Android.
 
 **Definition of Done**:
-- [ ] Version catalog entries added
-- [ ] Versions are latest stable
+- [x] Version catalog entries added
+- [x] Versions are latest stable
 
 ### Task 2.2: Build.gradle.kts dependencies
 
@@ -357,7 +357,7 @@ implementation(libs.ktor.client.content.negotiation)
 Note: `ktor-serialization-kotlinx-json` is already `implementation` (line 213). `ktor-client-content-negotiation` must be changed from `testImplementation` to `implementation` — keep the `testImplementation` line too since tests still need it, or the `implementation` scope covers tests. Do NOT install a Ktor client logging interceptor — it would expose the auth token in logs.
 
 **Definition of Done**:
-- [ ] All dependency lines added to build.gradle.kts
+- [x] All dependency lines added to build.gradle.kts
 
 ### Task 2.3: Google Maps API key manifest placeholder
 
@@ -387,8 +387,8 @@ Add inside `<application>`:
 ```
 
 **Definition of Done**:
-- [ ] Maps API key is read from `local.properties` and injected into manifest
-- [ ] Build succeeds even if `MAPS_API_KEY` is not set (empty string fallback)
+- [x] Maps API key is read from `local.properties` and injected into manifest
+- [x] Build succeeds even if `MAPS_API_KEY` is not set (empty string fallback)
 
 ---
 
