@@ -55,13 +55,13 @@ Create a Claude Code channel plugin that receives HTTP POST events from the Andr
 
 ### Acceptance Criteria
 
-- [ ] Plugin installs via `/plugin marketplace add` or local path
-- [ ] Plugin starts HTTP listener on configurable port (default 9090)
-- [ ] Plugin validates bearer token on incoming requests
-- [ ] Plugin pushes events as `notifications/claude/channel` to Claude Code
-- [ ] Plugin prepends configurable prompt template to events
-- [ ] Configuration via `/android-remote-control:configure` command or env vars
-- [ ] Config stored in `~/.claude/channels/android-remote-control/.env` with `0o600` permissions
+- [x] Plugin installs via `/plugin marketplace add` or local path
+- [x] Plugin starts HTTP listener on configurable port (default 9090)
+- [x] Plugin validates bearer token on incoming requests
+- [x] Plugin pushes events as `notifications/claude/channel` to Claude Code
+- [x] Plugin prepends configurable prompt template to events
+- [x] Configuration via `/android-remote-control:configure` command or env vars
+- [x] Config stored in `~/.claude/channels/android-remote-control/.env` with `0o600` permissions
 
 ### Task 1.1: Plugin packaging structure
 
@@ -106,9 +106,9 @@ channel-plugin/node_modules/
 ```
 
 **Definition of Done**:
-- [ ] Plugin directory structure exists with valid `plugin.json` and `package.json`
-- [ ] `bun install` succeeds and `bun.lockb` is committed
-- [ ] `node_modules/` is gitignored
+- [x] Plugin directory structure exists with valid `plugin.json` and `package.json`
+- [x] `bun install` succeeds and `bun.lockb` is committed
+- [x] `node_modules/` is gitignored
 
 ### Task 1.2: MCP server with channel capability and HTTP endpoint
 
@@ -224,20 +224,23 @@ Bun.serve({
         JSON.stringify(event.data, null, 2),
       ].join("\n");
 
-      // Push to Claude Code session
-      await mcp.notification({
-        method: "notifications/claude/channel",
-        params: {
-          channel: "android-remote-control",
-          message: {
-            source: "android-remote-control",
+      // Push to Claude Code session — params structure matches official Telegram plugin
+      mcp
+        .notification({
+          method: "notifications/claude/channel",
+          params: {
             content,
             meta: {
               sender: event.type,
+              ts: event.timestamp,
             },
           },
-        },
-      });
+        })
+        .catch((err) => {
+          process.stderr.write(
+            `android-remote-control channel: failed to deliver event to Claude: ${err}\n`
+          );
+        });
 
       return new Response(JSON.stringify({ status: "ok" }), {
         headers: { "Content-Type": "application/json" },
@@ -253,10 +256,10 @@ Bun.serve({
 ```
 
 **Definition of Done**:
-- [ ] Server starts, connects via stdio, and listens on HTTP port
-- [ ] Auth validation works (rejects missing/invalid token, accepts valid token)
-- [ ] Events are pushed to Claude Code session as channel notifications
-- [ ] Prompt template is prepended to event content
+- [x] Server starts, connects via stdio, and listens on HTTP port
+- [x] Auth validation works (rejects missing/invalid token, accepts valid token)
+- [x] Events are pushed to Claude Code session as channel notifications
+- [x] Prompt template is prepended to event content
 
 ### Task 1.3: Configuration CLI command
 
@@ -293,9 +296,9 @@ When invoked:
 ```
 
 **Definition of Done**:
-- [ ] `/android-remote-control:configure` command is available after plugin installation
-- [ ] Command writes config to correct location with correct permissions
-- [ ] Command provides clear instructions for enabling the channel
+- [x] `/android-remote-control:configure` command is available after plugin installation
+- [x] Command writes config to correct location with correct permissions
+- [x] Command provides clear instructions for enabling the channel
 
 ---
 
