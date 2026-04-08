@@ -30,19 +30,34 @@ class AppIconCache
         private val cache = ConcurrentHashMap<String, Bitmap>()
         private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
+        @Volatile
+        private var launchableApps: List<Pair<String, String>> = emptyList()
+
         /**
-         * Preloads icons for the first [count] launchable apps (alphabetically).
-         * Called from [com.danielealbano.androidremotecontrolmcp.McpApplication.onCreate].
+         * Preloads the launchable app list and icons for the first [count] apps
+         * (alphabetically). Called from [com.danielealbano.androidremotecontrolmcp.McpApplication.onCreate].
          */
         fun preload(count: Int = PRELOAD_COUNT) {
             scope.launch {
                 val pm = context.packageManager
                 val apps = getLaunchableAppsSorted(pm)
+                launchableApps = apps
                 for (app in apps.take(count)) {
                     loadAndCache(pm, app.first)
                 }
-                Logger.d(TAG, "Preloaded ${cache.size} app icons")
+                Logger.d(TAG, "Preloaded ${apps.size} apps, ${cache.size} icons")
             }
+        }
+
+        /**
+         * Returns the cached list of launchable apps as (packageId, appName) pairs,
+         * sorted alphabetically. If preload hasn't completed, fetches synchronously.
+         */
+        fun getLaunchableApps(): List<Pair<String, String>> {
+            if (launchableApps.isNotEmpty()) return launchableApps
+            val apps = getLaunchableAppsSorted(context.packageManager)
+            launchableApps = apps
+            return apps
         }
 
         /**
@@ -56,23 +71,38 @@ class AppIconCache
         fun getAll(): Map<String, Bitmap> = cache.toMap()
 
         /**
-         * Loads icons for all [packageIds] not already in the cache, in the background.
-         * Calls [onBatchLoaded] after each chunk completes so the UI can recompose.
+         * Re-queries PackageManager for the current launchable app list, diffs against
+         * the cached list, adds new apps, removes uninstalled apps, and loads icons
+         * for any uncached entries. Calls [onUpdated] when the list or icons change
+         * so the UI can recompose.
          */
-        fun loadMissing(
-            packageIds: List<String>,
-            onBatchLoaded: () -> Unit = {},
-        ) {
-            val uncached = packageIds.filter { !cache.containsKey(it) }
-            if (uncached.isEmpty()) return
-
+        fun refresh(onUpdated: () -> Unit = {}) {
             scope.launch {
                 val pm = context.packageManager
-                for (chunk in uncached.chunked(LOAD_CHUNK_SIZE)) {
-                    for (packageId in chunk) {
-                        loadAndCache(pm, packageId)
+                val freshApps = getLaunchableAppsSorted(pm)
+                val freshIds = freshApps.map { it.first }.toSet()
+                val cachedIds = launchableApps.map { it.first }.toSet()
+
+                // Remove uninstalled apps from icon cache
+                for (removedId in cachedIds - freshIds) {
+                    cache.remove(removedId)
+                }
+
+                // Update the app list
+                launchableApps = freshApps
+
+                // Emit immediately so the UI shows the updated list
+                onUpdated()
+
+                // Load icons for any uncached apps (new installs + previously unloaded)
+                val uncached = freshApps.filter { !cache.containsKey(it.first) }
+                if (uncached.isNotEmpty()) {
+                    for (chunk in uncached.chunked(LOAD_CHUNK_SIZE)) {
+                        for (app in chunk) {
+                            loadAndCache(pm, app.first)
+                        }
+                        onUpdated()
                     }
-                    onBatchLoaded()
                 }
             }
         }

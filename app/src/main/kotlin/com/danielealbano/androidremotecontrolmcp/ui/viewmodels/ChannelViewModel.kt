@@ -15,7 +15,6 @@ import com.danielealbano.androidremotecontrolmcp.data.model.NotificationFilterMo
 import com.danielealbano.androidremotecontrolmcp.data.repository.SettingsRepository
 import com.danielealbano.androidremotecontrolmcp.di.IoDispatcher
 import com.danielealbano.androidremotecontrolmcp.services.apps.AppIconCache
-import com.danielealbano.androidremotecontrolmcp.services.apps.AppManager
 import com.danielealbano.androidremotecontrolmcp.services.channel.EventChannelService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -33,7 +32,6 @@ class ChannelViewModel
     @Inject
     constructor(
         private val settingsRepository: SettingsRepository,
-        private val appManager: AppManager,
         private val appIconCache: AppIconCache,
         @ApplicationContext private val appContext: Context,
         @IoDispatcher private val ioDispatcher: CoroutineDispatcher,
@@ -188,28 +186,27 @@ class ChannelViewModel
         }
 
         fun loadInstalledApps() {
-            viewModelScope.launch(ioDispatcher) {
-                val pm = appContext.packageManager
-                val apps =
-                    appManager
-                        .listInstalledApps()
-                        .filter { app ->
-                            pm.getLaunchIntentForPackage(app.packageId) != null &&
-                                app.name.isNotBlank() &&
-                                app.name != app.packageId
-                        }
-                val sorted = apps.sortedBy { it.name.lowercase() }
+            // Show cached list immediately (preloaded at app start)
+            _installedApps.value = toAppInfoList(appIconCache.getLaunchableApps())
+            _appIcons.value = appIconCache.getAll()
 
-                // Show the list immediately — icons come from AppIconCache
-                _installedApps.value = sorted
+            // Refresh in background: detects newly installed / uninstalled apps
+            appIconCache.refresh {
+                _installedApps.value = toAppInfoList(appIconCache.getLaunchableApps())
                 _appIcons.value = appIconCache.getAll()
-
-                // Load any uncached icons in background, update UI when each chunk completes
-                appIconCache.loadMissing(sorted.map { it.packageId }) {
-                    _appIcons.value = appIconCache.getAll()
-                }
             }
         }
+
+        private fun toAppInfoList(apps: List<Pair<String, String>>): List<AppInfo> =
+            apps.map { (packageId, name) ->
+                AppInfo(
+                    packageId = packageId,
+                    name = name,
+                    versionName = null,
+                    versionCode = 0,
+                    isSystemApp = false,
+                )
+            }
 
         private fun startChannelService() {
             val intent =

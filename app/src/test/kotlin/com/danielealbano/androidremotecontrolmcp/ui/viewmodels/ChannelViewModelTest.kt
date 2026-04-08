@@ -5,7 +5,6 @@ import com.danielealbano.androidremotecontrolmcp.data.model.EventChannelConfig
 import com.danielealbano.androidremotecontrolmcp.data.model.GeofenceZone
 import com.danielealbano.androidremotecontrolmcp.data.model.NotificationFilterMode
 import com.danielealbano.androidremotecontrolmcp.data.repository.SettingsRepository
-import com.danielealbano.androidremotecontrolmcp.services.apps.AppManager
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -32,8 +31,8 @@ import org.junit.jupiter.api.Test
 class ChannelViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val settingsRepository = mockk<SettingsRepository>(relaxed = true)
-    private val appManager = mockk<AppManager>(relaxed = true)
-    private val appIconCache = mockk<com.danielealbano.androidremotecontrolmcp.services.apps.AppIconCache>(relaxed = true)
+    private val appIconCache =
+        mockk<com.danielealbano.androidremotecontrolmcp.services.apps.AppIconCache>(relaxed = true)
     private val appContext = mockk<Context>(relaxed = true)
 
     private val configFlow = MutableStateFlow(EventChannelConfig())
@@ -45,7 +44,7 @@ class ChannelViewModelTest {
         Dispatchers.setMain(testDispatcher)
         every { settingsRepository.eventChannelConfig } returns configFlow
         coEvery { settingsRepository.getEventChannelConfig() } answers { configFlow.value }
-        viewModel = ChannelViewModel(settingsRepository, appManager, appIconCache, appContext, testDispatcher)
+        viewModel = ChannelViewModel(settingsRepository, appIconCache, appContext, testDispatcher)
     }
 
     @AfterEach
@@ -207,26 +206,15 @@ class ChannelViewModelTest {
     @DisplayName("installed apps")
     inner class InstalledApps {
         @Test
-        fun `loadInstalledApps populates list sorted`() =
+        fun `loadInstalledApps populates list from cache`() =
             runTest {
-                val apps =
+                val cachedApps =
                     listOf(
-                        com.danielealbano.androidremotecontrolmcp.data.model.AppInfo(
-                            "com.b",
-                            "Bravo",
-                            "1.0",
-                            1,
-                            false,
-                        ),
-                        com.danielealbano.androidremotecontrolmcp.data.model.AppInfo(
-                            "com.a",
-                            "Alpha",
-                            "1.0",
-                            1,
-                            false,
-                        ),
+                        "com.a" to "Alpha",
+                        "com.b" to "Bravo",
                     )
-                coEvery { appManager.listInstalledApps(any(), any()) } returns apps
+                every { appIconCache.getLaunchableApps() } returns cachedApps
+                every { appIconCache.getAll() } returns emptyMap()
 
                 viewModel.loadInstalledApps()
                 advanceUntilIdle()

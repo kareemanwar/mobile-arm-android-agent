@@ -72,3 +72,5 @@ app/src/main/jniLibs/
 
 # Channel plugin
 channel-plugin/node_modules/
+app/hs_err_*.log
+app/replay_*.log
