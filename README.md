@@ -7,7 +7,7 @@ An Android application that runs as an **MCP (Model Context Protocol) server**, 
 
 The app runs directly on your Android device (or emulator) and exposes an HTTP server (with optional HTTPS) implementing the MCP protocol. AI models like Claude can connect to it and interact with any app on the device — reading UI elements, tapping buttons, typing text, swiping, capturing screenshots, managing files, launching apps, and more.
 
-> **⚠️ Disclaimer:** This software is provided "as-is" without warranty of any kind, for **research and educational purposes only**. The authors do not condone the use of this tool for any illegal, unauthorized, or unethical activities. Users are solely responsible for ensuring their use complies with all applicable laws and regulations. By using this software, you agree to use it responsibly and at your own risk.
+> **Warning:** This software is provided "as-is" without warranty of any kind, for **research and educational purposes only**. The authors do not condone the use of this tool for any illegal, unauthorized, or unethical activities. Users are solely responsible for ensuring their use complies with all applicable laws and regulations. By using this software, you agree to use it responsibly and at your own risk.
 
 ---
 
@@ -24,25 +24,11 @@ The app runs directly on your Android device (or emulator) and exposes an HTTP s
 
 ### 55 MCP Tools across 13 Categories
 
-All tool names use the `android_` prefix by default (e.g., `android_tap`). When a device slug is configured (e.g., `pixel7`), the prefix becomes `android_pixel7_` (e.g., `android_pixel7_tap`). See [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) for the full naming convention.
+Screen introspection, system actions, touch actions, gestures, node actions, text input, utilities, file operations, app management, camera, intents, notifications, and location.
 
-| Category | Tools | Description |
-|----------|-------|-------------|
-| **Screen Introspection** (1) | `android_get_screen_state` | Consolidated screen state: app info, screen dimensions, filtered UI node list (TSV), hierarchy section, optional annotated low-res screenshot with bounding boxes and node ID labels |
-| **System Actions** (6) | `android_press_back`, `android_press_home`, `android_press_recents`, `android_open_notifications`, `android_open_quick_settings`, `android_get_device_logs` | Global device actions and log retrieval |
-| **Touch Actions** (5) | `android_tap`, `android_long_press`, `android_double_tap`, `android_swipe`, `android_scroll` | Coordinate-based touch interactions |
-| **Gestures** (2) | `android_pinch`, `android_custom_gesture` | Multi-touch and complex gestures |
-| **Node Actions** (5) | `android_find_nodes`, `android_click_node`, `android_long_click_node`, `android_tap_node`, `android_scroll_to_node` | Accessibility node-based interactions |
-| **Text Input** (5) | `android_type_append_text`, `android_type_insert_text`, `android_type_replace_text`, `android_type_clear_text`, `android_press_key` | Natural text input via InputConnection and key events |
-| **Utilities** (5) | `android_get_clipboard`, `android_set_clipboard`, `android_wait_for_node`, `android_wait_for_idle`, `android_get_node_details` | Helper tools for automation and node inspection |
-| **File Operations** (8) | `android_list_storage_locations`, `android_list_files`, `android_read_file`, `android_write_file`, `android_append_file`, `android_file_replace`, `android_download_from_url`, `android_delete_file` | File system access via Storage Access Framework (SAF) |
-| **App Management** (3) | `android_open_app`, `android_list_apps`, `android_close_app` | Launch, list, and close applications |
-| **Camera** (6) | `android_list_cameras`, `android_list_camera_photo_resolutions`, `android_list_camera_video_resolutions`, `android_take_camera_photo`, `android_save_camera_photo`, `android_save_camera_video` | Camera photo/video capture via CameraX, list capabilities and resolutions |
-| **Intent** (2) | `android_send_intent`, `android_open_uri` | Send explicit/implicit intents and open URIs via the system |
-| **Notification** (6) | `android_notification_list`, `android_notification_open`, `android_notification_dismiss`, `android_notification_snooze`, `android_notification_action`, `android_notification_reply` | Read, interact with, and manage device notifications via NotificationListenerService |
-| **Location** (1) | `android_get_location` | Retrieve device geographic coordinates via LocationManager (GPS/network/fused providers) |
+All tool names use the `android_` prefix by default (e.g., `android_tap`). When a device slug is configured (e.g., `pixel7`), the prefix becomes `android_pixel7_` (e.g., `android_pixel7_tap`).
 
-See [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) for full tool documentation with input/output schemas and examples.
+See [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) for the full tool reference with input/output schemas and examples.
 
 ### Android App
 - Material Design 3 UI with tabbed layout (Server / Settings / About) and dark mode
@@ -51,7 +37,7 @@ See [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) for full tool documentation with inpu
 - Per-tool and per-parameter permissions (enable/disable individual MCP tools)
 - Permission management (Accessibility, Notifications, Camera, Microphone)
 - Remote access tunnel configuration (Cloudflare / ngrok)
-- Storage location management (SAF authorization for file tools)
+- Storage location management (automatic locations + SAF authorization for file tools)
 - Server log viewer (MCP tool calls, tunnel events)
 - Headless setup via ADB (configure, grant permissions, start/stop server without UI)
 
@@ -60,16 +46,16 @@ See [docs/MCP_TOOLS.md](docs/MCP_TOOLS.md) for full tool documentation with inpu
 | Feature | This project | [mobile-mcp] | [Android-MCP] | [android-mcp-server] | [adb-mcp] | [droidrun-mcp] |
 |---------|:-:|:-:|:-:|:-:|:-:|:-:|
 | MCP tools | 55 | 21 | 11 | 5 | 10 | 11 |
-| Runs on the phone (no ADB) | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| Runs on the phone (no ADB) | :white_check_mark: | :x: | :x: | :x: | :x: | :x: |
 | Action latency | 10-100 ms | 1-4 s | 1-4 s | 1-4 s | 1-4 s | 1-4 s |
-| Works over the internet | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Token-efficient screen state | ✅ | ❌ | ✅ | ❌ | ❌ | ✅ |
-| Annotated screenshots | ✅ | ❌ | ✅ | ❌ | ❌ | ❌ |
-| Configurable screenshot resolution/quality | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Per-tool enable/disable | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| Multi-device support | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ |
-| Camera, clipboard, files, downloads | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| iOS support | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Works over the internet | :white_check_mark: | :x: | :x: | :x: | :x: | :x: |
+| Token-efficient screen state | :white_check_mark: | :x: | :white_check_mark: | :x: | :x: | :white_check_mark: |
+| Annotated screenshots | :white_check_mark: | :x: | :white_check_mark: | :x: | :x: | :x: |
+| Configurable screenshot resolution/quality | :white_check_mark: | :x: | :x: | :x: | :x: | :x: |
+| Per-tool enable/disable | :white_check_mark: | :x: | :x: | :x: | :x: | :x: |
+| Multi-device support | :white_check_mark: | :white_check_mark: | :x: | :x: | :x: | :x: |
+| Camera, clipboard, files, downloads | :white_check_mark: | :x: | :x: | :x: | :x: | :x: |
+| iOS support | :x: | :white_check_mark: | :x: | :x: | :x: | :x: |
 
 [mobile-mcp]: https://github.com/mobile-next/mobile-mcp
 [Android-MCP]: https://github.com/CursorTouch/Android-MCP
@@ -83,78 +69,81 @@ On the token efficiency side, ADB-based tools typically return raw `uiautomator`
 
 ---
 
-## Requirements
+## Install
 
-### For Building
-- **JDK 17** (e.g., [Eclipse Temurin](https://adoptium.net/))
-- **Android SDK** with API 34 (Android 14)
-- **Android NDK** (for cross-compiling native binaries; install via SDK Manager: `sdkmanager "ndk;<version>"`)
-- **Gradle** 8.x (wrapper included, no global install needed)
-- **Go** (for compiling cloudflared tunnel binary; install from [go.dev/dl](https://go.dev/dl/))
-- **Rust/cargo** (for compiling ngrok native library; install from [rustup.rs](https://rustup.rs/))
-- **Maven** (for compiling ngrok Java library; install from [maven.apache.org](https://maven.apache.org/install.html))
+### Option A: Download on your phone (easiest)
 
-### For Running
-- Android device or emulator running **Android 13+** (API 33+), targeting **Android 14** (API 34)
-- **adb** (Android Debug Bridge) for device/emulator management
+1. Open the [Releases](https://github.com/danielealbano/android-remote-control-mcp/releases) page on your phone's browser
+2. Download the APK from the latest release
+3. Open the downloaded APK and follow the prompts to install it (you may need to allow installation from unknown sources)
 
-### For E2E Tests
-- **Podman** (rootful, for `redroid/redroid` Android container image)
+### Option B: Download on your PC and install via ADB
 
-Check all dependencies:
+1. Download the APK from the [Releases](https://github.com/danielealbano/android-remote-control-mcp/releases) page
+2. Connect your phone via USB (with USB Debugging enabled)
+3. Install the APK:
 ```bash
-make check-deps
+adb install app-release.apk
 ```
 
----
-
-## Quick Start
-
-### 1. Build the App
+### Option C: Build from sources
 
 ```bash
 git clone https://github.com/danielealbano/android-remote-control-mcp.git
 cd android-remote-control-mcp
 make build
+make install  # installs on connected device/emulator
 ```
 
-### 2. Install on Device/Emulator
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full build requirements and instructions.
+
+---
+
+## Setup
+
+1. **Open the app** and go to Settings > Permissions
+2. **Enable Accessibility Service** (required for UI introspection, actions, and screenshots)
+3. **Grant additional permissions** as needed (Camera, Microphone, Location, Notifications)
+4. **Configure storage locations** in Settings > Storage if you plan to use file tools (includes automatic locations like Downloads, plus custom locations via SAF)
+5. Go back to the **Server tab** and tap **Start** to start the MCP server
+
+The server starts on `http://127.0.0.1:8080` by default. The connection info (IP, port, token, URL) is displayed on the Server tab.
+
+---
+
+## Connect
+
+### MCP Client Configuration
+
+Add the server to your MCP client configuration (e.g., Claude Desktop, Claude Code, Cursor, etc.):
+
+```json
+{
+  "mcpServers": {
+    "android-phone": {
+      "type": "http",
+      "url": "http://DEVICE_IP:PORT/mcp",
+      "headers": {
+        "Authorization": "Bearer YOUR_TOKEN"
+      }
+    }
+  }
+}
+```
+
+Replace `DEVICE_IP`, `PORT`, and `YOUR_TOKEN` with the values shown in the app's Server tab. If the server is bound to localhost (default), you'll need [adb port forwarding](#using-with-adb-port-forwarding) or a [remote access tunnel](#using-remote-access-tunnels) to connect.
+
+### Testing with MCP Inspector
+
+[MCP Inspector](https://github.com/modelcontextprotocol/inspector) is the official visual testing tool for MCP servers. It provides a browser-based UI to connect, list tools, fill parameters, and see responses:
 
 ```bash
-# Start an emulator (if no device connected)
-make setup-emulator
-make start-emulator
-
-# Install the debug APK
-make install
+npx @modelcontextprotocol/inspector
 ```
 
-### 3. Configure Permissions
+This opens a UI at `http://localhost:6274` where you can connect to your server and test tools interactively.
 
-1. **Enable Accessibility Service**: Open the app, tap "Enable Accessibility Service", and toggle it on in Android Settings. This also enables screenshot capture via the `takeScreenshot()` API (Android 11+).
-2. **Grant Camera & Microphone** (optional, for camera tools): Grant via the app UI or `make grant-permissions`.
-
-### 4. Start the MCP Server
-
-Tap the "Start Server" button in the app. The server starts on `http://127.0.0.1:8080` by default (HTTPS is disabled by default).
-
-### 5. Connect from Host Machine
-
-Set up port forwarding (if server is bound to localhost):
-```bash
-make forward-port
-```
-
-Test the connection:
-```bash
-curl -X POST http://localhost:8080/mcp \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json, text/event-stream" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"ping"}'
-```
-
-### 6. Make MCP Tool Calls
+### Testing with curl
 
 All requests are sent as JSON-RPC 2.0 via `POST /mcp` (Streamable HTTP transport). The server requires a session initialization handshake before tool calls:
 
@@ -200,153 +189,6 @@ The bearer token is displayed in the app's connection info section. You can copy
 
 ---
 
-## Building
-
-### Debug Build
-
-```bash
-make build
-# APK: app/build/outputs/apk/debug/app-debug.apk
-```
-
-### Release Build
-
-```bash
-make build-release
-# APK: app/build/outputs/apk/release/app-release.apk
-```
-
-For signed release builds, create `keystore.properties` in the project root:
-```properties
-storeFile=path/to/your.keystore
-storePassword=your_store_password
-keyAlias=your_key_alias
-keyPassword=your_key_password
-```
-
-### Clean Build
-
-```bash
-make clean
-```
-
----
-
-## Testing
-
-### Unit Tests
-
-```bash
-make test-unit
-```
-
-Runs JUnit 5 unit tests with MockK for mocking. Tests cover accessibility tree parsing, node finding, screenshot encoding, settings repository, network utilities, and all 55 MCP tool handlers.
-
-### Integration Tests
-
-```bash
-make test-integration
-```
-
-Runs JVM-based integration tests using Ktor `testApplication` (no device or emulator required). Tests the full HTTP stack: authentication, JSON-RPC protocol, tool dispatch for all 12 tool categories, and error handling.
-
-> **Note**: Some integration tests (e.g., `NgrokTunnelIntegrationTest`) require environment variables. Copy `.env.example` to `.env` and fill in the required values. The Makefile sources `.env` automatically.
-
-### E2E Tests
-
-```bash
-make test-e2e
-```
-
-Requires rootful Podman. Starts a redroid Android container via Podman, installs the app, and performs real MCP tool calls. Includes:
-- **Calculator test**: 7 + 3 = 10 via MCP tools (verifies full stack)
-- **Screenshot test**: Capture with different quality settings
-- **Error handling test**: Authentication, unknown tools, invalid params
-
-### All Tests
-
-```bash
-make test
-```
-
-### Code Coverage
-
-```bash
-make coverage
-```
-
-Generates a Jacoco HTML report at `app/build/reports/jacoco/jacocoTestReport/html/index.html`. Minimum coverage target: 80%.
-
----
-
-## Architecture
-
-The application is a **service-based Android app** with three main components:
-
-1. **McpAccessibilityService** - UI introspection, action execution, and screenshot capture via Android Accessibility APIs (`takeScreenshot()` on Android 11+)
-2. **McpServerService** - Foreground service running the Ktor HTTP/HTTPS server
-3. **MainActivity** - Jetpack Compose UI for configuration and control
-
-```mermaid
-graph TB
-    Client["MCP Client (AI Model)"]
-    Client -->|"HTTP/HTTPS POST /mcp + Bearer Token"| McpServer
-
-    subgraph Device["Android Device"]
-        subgraph McpServerService["McpServerService (Foreground Service)"]
-            McpServer["McpServer (Ktor)"]
-            McpServer -->|"Streamable HTTP /mcp"| SDK["SDK Server (MCP Kotlin SDK)"]
-            SDK -->|"55 MCP Tools"| Tools["Tool Handlers"]
-            TunnelMgr["TunnelManager (optional)"]
-            TunnelMgr -->|"Cloudflare / ngrok"| PublicURL["Public HTTPS URL"]
-        end
-
-        subgraph Accessibility["McpAccessibilityService"]
-            TreeParser["AccessibilityTreeParser"]
-            ElemFinder["ElementFinder"]
-            ActionExec["ActionExecutor"]
-            ScreenEnc["ScreenshotEncoder"]
-        end
-
-        subgraph Storage["Storage & App Services"]
-            StorageProv["StorageLocationProvider"]
-            FileOps["FileOperationProvider"]
-            AppMgr["AppManager"]
-        end
-
-        subgraph CameraSvc["Camera Services"]
-            CamProv["CameraProvider\n(CameraX)"]
-        end
-
-        subgraph IntentSvc["Intent Services"]
-            IntentDisp["IntentDispatcher"]
-        end
-
-        subgraph NotifSvc["Notification Services"]
-            NotifProv["NotificationProvider"]
-            NotifListener["McpNotificationListenerService"]
-        end
-
-        subgraph LocSvc["Location Services"]
-            LocProv["LocationProvider"]
-        end
-
-        MainActivity["MainActivity (Compose UI)"]
-
-        Tools --> Accessibility
-        Tools --> Storage
-        Tools --> CameraSvc
-        Tools --> IntentSvc
-        Tools --> NotifSvc
-        Tools --> LocSvc
-        MainActivity -->|"StateFlow (status)"| McpServerService
-    end
-```
-
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture documentation.
-
----
-
 ## Configuration
 
 ### Server Settings (via App UI)
@@ -364,6 +206,40 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed architecture docum
 | File Size Limit | 50 MB | Maximum file size for file operations (range 1-500 MB) |
 | Allow HTTP Downloads | Disabled | Allow non-HTTPS downloads via `android_download_from_url` |
 | Download Timeout | 60 seconds | Timeout for file downloads (range 10-300 seconds) |
+
+### Using with adb Port Forwarding
+
+When the server is bound to `127.0.0.1` (default, most secure):
+
+```bash
+# Forward device port to host
+adb forward tcp:8080 tcp:8080
+
+# Test connection from host
+curl -X POST http://localhost:8080/mcp \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"ping"}'
+```
+
+### Using over Network
+
+When the server is bound to `0.0.0.0`:
+
+1. Find the device's IP address (shown in the app's connection info)
+2. Connect directly via `POST http://DEVICE_IP:8080/mcp` with bearer token
+
+**Warning**: Binding to `0.0.0.0` exposes the server to all devices on the same network. Only use on trusted private networks.
+
+### Using Remote Access Tunnels
+
+For connecting from outside the local network without port forwarding:
+
+1. **Cloudflare Quick Tunnels** (default, no account required): Creates a temporary tunnel with a random `*.trycloudflare.com` HTTPS URL.
+2. **ngrok** (account required): Supports optional custom domains. Requires an ngrok authtoken (free tier available). Only available on ARM64 devices.
+
+Enable the tunnel in the app's "Remote Access" section. The public URL is displayed in the connection info and server logs.
 
 ### Headless Setup via ADB
 
@@ -455,109 +331,35 @@ adb shell am start \
   --es action stop
 ```
 
-### Using with adb Port Forwarding (Recommended)
-
-When the server is bound to `127.0.0.1` (default, most secure):
-
-```bash
-# Forward device port to host
-adb forward tcp:8080 tcp:8080
-
-# Test connection from host
-curl -X POST http://localhost:8080/mcp \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -H "Content-Type: application/json" \
-  -H "Accept: application/json, text/event-stream" \
-  -d '{"jsonrpc":"2.0","id":1,"method":"ping"}'
-```
-
-### Using over Network
-
-When the server is bound to `0.0.0.0`:
-
-1. Find the device's IP address (shown in the app's connection info)
-2. Connect directly via `POST http://DEVICE_IP:8080/mcp` with bearer token
-
-**Warning**: Binding to `0.0.0.0` exposes the server to all devices on the same network. Only use on trusted private networks.
-
-### Using Remote Access Tunnels
-
-For connecting from outside the local network without port forwarding:
-
-1. **Cloudflare Quick Tunnels** (default, no account required): Creates a temporary tunnel with a random `*.trycloudflare.com` HTTPS URL.
-2. **ngrok** (account required): Supports optional custom domains. Requires an ngrok authtoken (free tier available). Only available on ARM64 devices.
-
-Enable the tunnel in the app's "Remote Access" section. The public URL is displayed in the connection info and server logs.
-
 ---
 
 ## Security
 
-### HTTPS (Optional, Disabled by Default)
-- HTTPS can be enabled in the app settings for encrypted TLS communication
-- When enabled, uses auto-generated self-signed certificates (or upload your own CA-signed certificate)
-- Certificate is stored in app-private storage
-- Server defaults to HTTP; enable HTTPS when operating on untrusted networks
+### No Root Required
 
-### Bearer Token Authentication
-- Every MCP request requires `Authorization: Bearer <token>` header
-- Token is auto-generated on first launch (UUID)
-- Token can be viewed, copied, and regenerated in the app
-- Constant-time comparison prevents timing attacks
+The application runs entirely within Android's standard permission model. No root access, no unlocked bootloader, no custom ROM required.
 
-### Binding Address
-- **Default `127.0.0.1`**: Only accessible via adb port forwarding (most secure)
-- **Optional `0.0.0.0`**: Accessible over network (use only on trusted networks)
-- Security warning dialog displayed when switching to network mode
+### Authentication
+
+Every MCP request requires an `Authorization: Bearer <token>` header. The token is auto-generated on first launch (UUID) and can be viewed, copied, and regenerated in the app.
+
+### Network Security
+
+- **Default binding `127.0.0.1`**: Only accessible via adb port forwarding or tunnels (most secure)
+- **Optional binding `0.0.0.0`**: Accessible over network (use only on trusted networks; security warning displayed when enabling)
+- **HTTPS**: Optional, disabled by default. When enabled, uses auto-generated self-signed certificates or upload your own CA-signed certificate. Certificate is stored in app-private storage.
 
 ### Permissions
-- **Accessibility Service**: Required for UI introspection, actions, and screenshots (user must enable manually)
-- **Camera**: Required for camera photo/video tools (runtime permission, system dialog)
-- **Record Audio**: Required for video recording with audio (runtime permission, system dialog)
-- **Internet**: For running the HTTP/HTTPS server
-- **Foreground Service**: For keeping services alive in background
-- **Receive Boot Completed**: For auto-start on boot
-- **Query All Packages**: For listing installed applications (`android_list_apps`)
-- **Kill Background Processes**: For closing background applications (`android_close_app`)
-- **Notification Listener**: Required for notification tools (user must enable manually in Settings > Notifications > Notification access)
-- **Location (Fine & Coarse)**: Required for `android_get_location` tool (runtime permission, system dialog)
-- **Storage Access Framework**: Per-location authorization via system file picker (for file tools)
-- No root access required
 
----
+All permissions are managed from the app's Settings > Permissions tab. Every sensitive permission requires explicit user action — nothing is granted silently.
 
-## Linting
-
-```bash
-# Check for issues
-make lint
-
-# Auto-fix issues
-make lint-fix
-```
-
-Uses ktlint for code style and detekt for static analysis.
+Storage locations are configured in Settings > Storage, which includes automatic locations (e.g., Downloads) and custom locations authorized via the system file picker.
 
 ---
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feat/your-feature`
-3. Make your changes following the project conventions (see [docs/PROJECT.md](docs/PROJECT.md))
-4. Ensure all checks pass: `make lint && make test-unit && make build`
-5. Commit with descriptive messages (e.g., `feat: add new MCP tool for ...`)
-6. Open a pull request
-
-### Development Conventions
-
-- **Language**: Kotlin with Android (Jetpack Compose, Ktor)
-- **Architecture**: Service-based with SOLID principles
-- **Testing**: JUnit 5 + MockK (unit), Ktor testApplication (JVM integration), Testcontainers (E2E)
-- **Linting**: ktlint + detekt
-- **DI**: Hilt (Dagger-based)
-
-See [docs/PROJECT.md](docs/PROJECT.md) for the complete project bible.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for build requirements, testing, architecture, and development conventions.
 
 ---
 
