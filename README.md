@@ -113,9 +113,9 @@ The server starts on `http://127.0.0.1:8080` by default. The connection info (IP
 
 ## Connect
 
-### MCP Client Configuration
+### Claude Desktop / Claude Code
 
-Add the server to your MCP client configuration (e.g., Claude Desktop, Claude Code, Cursor, etc.):
+Add the server to your `.mcp.json` configuration file:
 
 ```json
 {
@@ -132,6 +132,10 @@ Add the server to your MCP client configuration (e.g., Claude Desktop, Claude Co
 ```
 
 Replace `DEVICE_IP`, `PORT`, and `YOUR_TOKEN` with the values shown in the app's Server tab. If the server is bound to localhost (default), you'll need [adb port forwarding](#using-with-adb-port-forwarding) or a [remote access tunnel](#using-remote-access-tunnels) to connect.
+
+### Other MCP Clients
+
+The MCP server exposes a standard Streamable HTTP endpoint at `/mcp` with bearer token authentication. Any MCP-compatible client can connect to it — refer to your client's documentation for the specific configuration format.
 
 ### Testing with MCP Inspector
 
