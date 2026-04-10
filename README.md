@@ -262,6 +262,10 @@ Replace `<app-id>` with the application ID for your build:
 adb shell settings put secure enabled_accessibility_services \
   <app-id>/com.danielealbano.androidremotecontrolmcp.services.accessibility.McpAccessibilityService
 
+# Enable Notification Listener Service (required for notification tools)
+adb shell cmd notification allow_listener \
+  <app-id>/com.danielealbano.androidremotecontrolmcp.services.notifications.McpNotificationListenerService
+
 # Grant notification permission (Android 13+)
 adb shell pm grant <app-id> android.permission.POST_NOTIFICATIONS
 
@@ -270,6 +274,16 @@ adb shell pm grant <app-id> android.permission.CAMERA
 
 # Grant microphone permission
 adb shell pm grant <app-id> android.permission.RECORD_AUDIO
+
+# Grant location permissions
+adb shell pm grant <app-id> android.permission.ACCESS_FINE_LOCATION
+adb shell pm grant <app-id> android.permission.ACCESS_COARSE_LOCATION
+adb shell pm grant <app-id> android.permission.ACCESS_BACKGROUND_LOCATION
+
+# Grant media read permissions (Android 13+)
+adb shell pm grant <app-id> android.permission.READ_MEDIA_IMAGES
+adb shell pm grant <app-id> android.permission.READ_MEDIA_VIDEO
+adb shell pm grant <app-id> android.permission.READ_MEDIA_AUDIO
 ```
 
 #### Configure the App
