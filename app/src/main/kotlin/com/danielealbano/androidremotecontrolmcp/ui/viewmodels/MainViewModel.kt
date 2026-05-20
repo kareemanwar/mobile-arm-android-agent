@@ -210,6 +210,12 @@ class MainViewModel
             }
         }
 
+        fun clearBearerToken() {
+            viewModelScope.launch(ioDispatcher) {
+                settingsRepository.updateBearerToken("")
+            }
+        }
+
         fun updateAutoStartOnBoot(enabled: Boolean) {
             viewModelScope.launch(ioDispatcher) {
                 settingsRepository.updateAutoStartOnBoot(enabled)

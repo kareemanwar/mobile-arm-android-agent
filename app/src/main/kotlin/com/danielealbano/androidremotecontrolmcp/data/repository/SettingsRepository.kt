@@ -29,7 +29,12 @@ interface SettingsRepository {
 
     /**
      * Returns the current server configuration as a one-shot read.
-     * If the bearer token is empty, a new one is auto-generated and persisted.
+     * On the first call after install (or after upgrade from a version that
+     * predates the BEARER_TOKEN_INITIALIZED flag), the bearer token is
+     * initialized exactly once: any existing non-empty token is preserved;
+     * an empty token is replaced with a freshly generated UUID. On subsequent
+     * calls, the stored value (including an empty string, which disables
+     * bearer-token authentication) is returned as-is — no regeneration.
      */
     suspend fun getServerConfig(): ServerConfig
 
@@ -45,8 +50,11 @@ interface SettingsRepository {
 
     /**
      * Updates the bearer token used for MCP request authentication.
+     * Passing an empty string clears the token and disables bearer-token
+     * authentication on the MCP server (the auth plugin skips auth when
+     * the expected token is empty).
      *
-     * @param token The new bearer token value.
+     * @param token The new bearer token value (empty string clears).
      */
     suspend fun updateBearerToken(token: String)
 

@@ -49,7 +49,7 @@ Out of scope:
 ### Task 1.1 — Add `BEARER_TOKEN_INITIALIZED_KEY` Preferences key
 
 **Definition of Done**:
-- [ ] A new `booleanPreferencesKey("bearer_token_initialized")` exists in [SettingsRepositoryImpl.kt](app/src/main/kotlin/com/danielealbano/androidremotecontrolmcp/data/repository/SettingsRepositoryImpl.kt) alongside the other `*_KEY` constants.
+- [x] A new `booleanPreferencesKey("bearer_token_initialized")` exists in [SettingsRepositoryImpl.kt](app/src/main/kotlin/com/danielealbano/androidremotecontrolmcp/data/repository/SettingsRepositoryImpl.kt) alongside the other `*_KEY` constants.
 
 **Actions**:
 
@@ -62,11 +62,11 @@ Out of scope:
 ### Task 1.2 — Rewrite `getServerConfig()` (atomic, upgrade-safe, no auto-regen)
 
 **Definition of Done**:
-- [ ] The first-time generation runs **inside** a single `dataStore.edit { }` block to avoid the TOCTOU race that exists in the current implementation (current code reads via `data.first()` and then writes — concurrent callers can both pass the check).
-- [ ] When `BEARER_TOKEN_INITIALIZED_KEY` is not present:
+- [x] The first-time generation runs **inside** a single `dataStore.edit { }` block to avoid the TOCTOU race that exists in the current implementation (current code reads via `data.first()` and then writes — concurrent callers can both pass the check).
+- [x] When `BEARER_TOKEN_INITIALIZED_KEY` is not present:
   - if the stored `BEARER_TOKEN_KEY` is non-empty, it is preserved and the flag is set to `true` (upgrade path),
   - if the stored `BEARER_TOKEN_KEY` is missing or empty, a fresh UUID is generated and both keys are persisted (fresh-install path).
-- [ ] When `BEARER_TOKEN_INITIALIZED_KEY == true`, the stored `bearerToken` (including the empty string) is returned as-is. No regeneration. No writes.
+- [x] When `BEARER_TOKEN_INITIALIZED_KEY == true`, the stored `bearerToken` (including the empty string) is returned as-is. No regeneration. No writes.
 
 **Actions**:
 
@@ -94,8 +94,8 @@ Out of scope:
 ### Task 1.3 — Update `SettingsRepository` interface KDoc for `getServerConfig` and `updateBearerToken`
 
 **Definition of Done**:
-- [ ] The `getServerConfig` KDoc no longer claims auto-regeneration; it documents the one-shot install-time generation and the upgrade-preservation path.
-- [ ] The `updateBearerToken` KDoc explicitly mentions that an empty string clears the token and disables bearer-token authentication on the MCP server.
+- [x] The `getServerConfig` KDoc no longer claims auto-regeneration; it documents the one-shot install-time generation and the upgrade-preservation path.
+- [x] The `updateBearerToken` KDoc explicitly mentions that an empty string clears the token and disables bearer-token authentication on the MCP server.
 
 **Actions**:
 
@@ -131,10 +131,10 @@ Out of scope:
 ### Task 1.4 — Allow empty `bearer_token` in `AdbConfigHandler`
 
 **Definition of Done**:
-- [ ] `AdbConfigHandler.applyBearerToken` no longer early-exits when the extra value is empty.
-- [ ] When `bearer_token` extra is missing from the intent (`getStringExtra(...) == null`), the handler still returns without modifying state (matches existing behavior of other extras).
-- [ ] When `bearer_token` extra is present and equal to `""`, the handler calls `settingsRepository.updateBearerToken("")` (clearing the token).
-- [ ] Log message updated to reflect the new semantics (no longer says "Ignoring empty bearer_token"; instead logs either "Bearer token cleared" for empty or "Bearer token updated (length=N)" for non-empty).
+- [x] `AdbConfigHandler.applyBearerToken` no longer early-exits when the extra value is empty.
+- [x] When `bearer_token` extra is missing from the intent (`getStringExtra(...) == null`), the handler still returns without modifying state (matches existing behavior of other extras).
+- [x] When `bearer_token` extra is present and equal to `""`, the handler calls `settingsRepository.updateBearerToken("")` (clearing the token).
+- [x] Log message updated to reflect the new semantics (no longer says "Ignoring empty bearer_token"; instead logs either "Bearer token cleared" for empty or "Bearer token updated (length=N)" for non-empty).
 
 **Actions**:
 
@@ -155,8 +155,8 @@ Out of scope:
 ### Task 1.5 — Add `clearBearerToken()` helper on `MainViewModel`
 
 **Definition of Done**:
-- [ ] `MainViewModel` exposes `fun clearBearerToken()` that launches a coroutine on the file's existing `ioDispatcher` (used by every other repository-mutating method in this file) and calls `settingsRepository.updateBearerToken("")`.
-- [ ] No new method is added to `SettingsRepository` (per locked decision: reuse `updateBearerToken("")`; the VM helper is not a repository method, only a UI-side convenience wrapper).
+- [x] `MainViewModel` exposes `fun clearBearerToken()` that launches a coroutine on the file's existing `ioDispatcher` (used by every other repository-mutating method in this file) and calls `settingsRepository.updateBearerToken("")`.
+- [x] No new method is added to `SettingsRepository` (per locked decision: reuse `updateBearerToken("")`; the VM helper is not a repository method, only a UI-side convenience wrapper).
 
 **Actions**:
 
@@ -173,9 +173,9 @@ Out of scope:
 ### Task 1.6 — Add string resources for Clear button and warning banner
 
 **Definition of Done**:
-- [ ] `app/src/main/res/values/strings.xml` contains the new string keys listed below.
-- [ ] Strings are concise and aligned in tone with existing `config_token_*` resources.
-- [ ] The warning-banner body explicitly references stopping the server before pressing Regenerate (because Regenerate is gated on `isEnabled` while the server is Running or Starting — see Story 1 acceptance criterion).
+- [x] `app/src/main/res/values/strings.xml` contains the new string keys listed below.
+- [x] Strings are concise and aligned in tone with existing `config_token_*` resources.
+- [x] The warning-banner body explicitly references stopping the server before pressing Regenerate (because Regenerate is gated on `isEnabled` while the server is Running or Starting — see Story 1 acceptance criterion).
 
 **Actions**:
 
@@ -190,11 +190,11 @@ Out of scope:
 ### Task 1.7 — Add Clear icon button to bearer token field
 
 **Definition of Done**:
-- [ ] A new Clear `IconButton` is rendered inside the bearer token `OutlinedTextField` trailing-icon `Row`, positioned BETWEEN the Copy button and the Regenerate button. Order in the row: Visibility → Copy → **Clear** → Regenerate.
-- [ ] `enabled = isEnabled && serverConfig.bearerToken.isNotEmpty()` (consistent with the existing pattern: token-mutating actions are gated on the same `isEnabled` clause as Regenerate).
-- [ ] `onClick = viewModel::clearBearerToken`.
-- [ ] Icon: `Icons.Default.Clear`. Content description: `stringResource(R.string.config_token_clear)`.
-- [ ] Semantic content description on the IconButton: `"Clear bearer token"` (matches existing pattern used for Copy and Regenerate at lines 228 and 241).
+- [x] A new Clear `IconButton` is rendered inside the bearer token `OutlinedTextField` trailing-icon `Row`, positioned BETWEEN the Copy button and the Regenerate button. Order in the row: Visibility → Copy → **Clear** → Regenerate.
+- [x] `enabled = isEnabled && serverConfig.bearerToken.isNotEmpty()` (consistent with the existing pattern: token-mutating actions are gated on the same `isEnabled` clause as Regenerate).
+- [x] `onClick = viewModel::clearBearerToken`.
+- [x] Icon: `Icons.Default.Clear`. Content description: `stringResource(R.string.config_token_clear)`.
+- [x] Semantic content description on the IconButton: `"Clear bearer token"` (matches existing pattern used for Copy and Regenerate at lines 228 and 241).
 
 **Actions**:
 
@@ -224,10 +224,10 @@ Out of scope:
 ### Task 1.8 — Render empty-token warning banner in `GeneralSettingsScreen`
 
 **Definition of Done**:
-- [ ] When `serverConfig.bearerToken.isEmpty()`, a persistent warning card/banner is rendered immediately ABOVE the bearer token label (the `Text(stringResource(R.string.config_bearer_token_label))` at line 189-192).
-- [ ] When `serverConfig.bearerToken.isNotEmpty()`, the banner is not rendered (no space reserved).
-- [ ] The banner uses Material 3 tonal styling: `Card` with `colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)`; text uses `MaterialTheme.colorScheme.onErrorContainer`; leading icon `Icons.Default.Warning`.
-- [ ] The banner is purely informational — no buttons or interaction.
+- [x] When `serverConfig.bearerToken.isEmpty()`, a persistent warning card/banner is rendered immediately ABOVE the bearer token label (the `Text(stringResource(R.string.config_bearer_token_label))` at line 189-192).
+- [x] When `serverConfig.bearerToken.isNotEmpty()`, the banner is not rendered (no space reserved).
+- [x] The banner uses Material 3 tonal styling: `Card` with `colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)`; text uses `MaterialTheme.colorScheme.onErrorContainer`; leading icon `Icons.Default.Warning`.
+- [x] The banner is purely informational — no buttons or interaction.
 
 **Actions**:
 
@@ -280,10 +280,10 @@ Out of scope:
 ### Task 1.9 — Hide Bearer Token row + omit copy-all line when empty
 
 **Definition of Done**:
-- [ ] In `ConnectionInfoCard`, the `Row` displaying the Bearer Token label, value, and visibility toggle is NOT rendered when `bearerToken.isEmpty()`.
-- [ ] The `connectionString` produced by `buildString` does NOT include the `"\nBearer Token: $bearerToken"` line when `bearerToken.isEmpty()`.
-- [ ] No new string resource is required.
-- [ ] No refactor of the existing inline `buildString` is performed (composition stays inline inside the composable; the empty-token behavior is verified manually in Story 4).
+- [x] In `ConnectionInfoCard`, the `Row` displaying the Bearer Token label, value, and visibility toggle is NOT rendered when `bearerToken.isEmpty()`.
+- [x] The `connectionString` produced by `buildString` does NOT include the `"\nBearer Token: $bearerToken"` line when `bearerToken.isEmpty()`.
+- [x] No new string resource is required.
+- [x] No refactor of the existing inline `buildString` is performed (composition stays inline inside the composable; the empty-token behavior is verified manually in Story 4).
 
 **Actions**:
 

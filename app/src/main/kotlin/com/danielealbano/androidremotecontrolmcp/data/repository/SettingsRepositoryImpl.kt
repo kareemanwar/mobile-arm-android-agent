@@ -52,18 +52,16 @@ class SettingsRepositoryImpl
             }
 
         override suspend fun getServerConfig(): ServerConfig {
-            val config =
-                dataStore.data.first().let { prefs ->
-                    mapPreferencesToServerConfig(prefs)
+            dataStore.edit { prefs ->
+                if (prefs[BEARER_TOKEN_INITIALIZED_KEY] != true) {
+                    val existing = prefs[BEARER_TOKEN_KEY].orEmpty()
+                    if (existing.isEmpty()) {
+                        prefs[BEARER_TOKEN_KEY] = generateTokenString()
+                    }
+                    prefs[BEARER_TOKEN_INITIALIZED_KEY] = true
                 }
-
-            if (config.bearerToken.isEmpty()) {
-                val token = generateTokenString()
-                updateBearerToken(token)
-                return config.copy(bearerToken = token)
             }
-
-            return config
+            return mapPreferencesToServerConfig(dataStore.data.first())
         }
 
         override suspend fun updatePort(port: Int) {
@@ -663,6 +661,7 @@ class SettingsRepositoryImpl
             private val PORT_KEY = intPreferencesKey("port")
             private val BINDING_ADDRESS_KEY = stringPreferencesKey("binding_address")
             private val BEARER_TOKEN_KEY = stringPreferencesKey("bearer_token")
+            private val BEARER_TOKEN_INITIALIZED_KEY = booleanPreferencesKey("bearer_token_initialized")
             private val AUTO_START_KEY = booleanPreferencesKey("auto_start_on_boot")
             private val HTTPS_ENABLED_KEY = booleanPreferencesKey("https_enabled")
             private val CERTIFICATE_SOURCE_KEY = stringPreferencesKey("certificate_source")
