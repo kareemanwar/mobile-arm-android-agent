@@ -649,29 +649,29 @@ Out of scope:
 ### Task 4.1 — Run linting and fix violations
 
 **Definition of Done**:
-- [ ] `make lint` exits 0.
-- [ ] Any new violation introduced by this plan is fixed in the responsible file from stories 1–3.
-- [ ] Unrelated pre-existing violations discovered during this run are also fixed (per project rule "Fix broken linting").
+- [x] `make lint` exits 0.
+- [x] Any new violation introduced by this plan is fixed in the responsible file from stories 1–3.
+- [x] Unrelated pre-existing violations discovered during this run are also fixed (per project rule "Fix broken linting"). (Resolution: Android Lint's `lintDebug` task — not run by CI's `lint` job, but run by `./gradlew build` — flagged a pre-existing `MissingPermission` on `WifiEventListener.kt:140` (`wifiManager.scanResults`). Fixed at the root cause by wrapping the access in `try/catch SecurityException` and logging — Lint's accepted resolution. File added to scope with explicit user authorization.)
 
 ### Task 4.2 — Run the full automated test suite
 
 **Definition of Done**:
-- [ ] `make test-unit` exits 0.
-- [ ] `make test-integration` exits 0.
-- [ ] Every test added or modified by Tasks 1.10, 1.11, 1.12, 2.6, 2.7 is green.
-- [ ] Existing `BearerTokenAuthTest.plugin skips authentication when token is empty` is green (regression line for the entire feature).
-- [ ] Any broken pre-existing test is fixed in place (per project rule "Fix broken tests").
+- [x] `make test-unit` exits 0.
+- [x] `make test-integration` exits 0.
+- [x] Every test added or modified by Tasks 1.10, 1.11, 1.12, 2.6, 2.7 is green.
+- [x] Existing `BearerTokenAuthTest.plugin skips authentication when token is empty` is green (regression line for the entire feature).
+- [x] Any broken pre-existing test is fixed in place (per project rule "Fix broken tests"). (No pre-existing tests broke during this plan.)
 
 ### Task 4.3 — Run the full build
 
 **Definition of Done**:
-- [ ] `./gradlew build` exits 0 with zero warnings.
+- [x] `./gradlew build` exits 0 with zero warnings. (`BUILD SUCCESSFUL in 4m 7s — 234 actionable tasks: 100 executed, 134 up-to-date`. The WifiEventListener `lintDebug` regression discovered during this task was fixed before this checkbox was marked.)
 
 ### Task 4.4 — Ground-up manual review against this plan
 
 **Definition of Done**:
-- [ ] Walk through stories 1, 2, and 3 sequentially. For each Action, open the affected file and verify the diff matches the plan exactly.
-- [ ] For each user story's acceptance criteria, verify the criterion holds against the running app/code (not the plan).
+- [x] Walk through stories 1, 2, and 3 sequentially. For each Action, open the affected file and verify the diff matches the plan exactly. (Walked through all source/test/doc Actions; every change matches the plan verbatim. See verification snippets captured during Task 4.4 execution.)
+- [x] For each user story's acceptance criteria, verify the criterion holds against the running app/code (not the plan). (Automated coverage: `SettingsRepositoryImplTest.getServerConfig generates token on first call when none stored`, `getServerConfig preserves existing token on upgrade path`, `getServerConfig returns empty token after explicit clear`, `MainViewModelTest.clearBearerToken delegates to repository with empty string`, `AdbConfigHandlerTest.empty bearer_token clears the stored token`, `BearerTokenAuthTest.plugin skips authentication when token is empty`, `EventChannelServiceTest.config with non-blank endpoint and empty authToken is a startable shape`, `EventDispatcherImplTest.dispatch with empty auth token sends no Authorization header` — all green.)
 - [ ] Manually verify (in the app or via adb logcat) that:
   - Fresh-install flow generates a token and sets the initialized flag.
   - Upgrade simulation (manually preload DataStore with a non-empty token and no init flag) preserves the existing token.
@@ -683,8 +683,10 @@ Out of scope:
   - With `EventChannelService` running and `authToken` empty, dispatch a synthetic event (e.g., generate a notification that triggers the listener) and verify on the receiving end (a test HTTP endpoint or packet capture) that NO `Authorization` header is present in the outgoing POST.
   - `BootCompletedReceiver` auto-starts the channel after a reboot with empty `authToken` (manually rebooted device/emulator, with `channelConfig.enabled = true` and `endpointUrl` non-blank).
   - `--es bearer_token ""` clears the token (verify via logcat — should log "Bearer token cleared" — and via the in-app display showing the warning banner).
-- [ ] Confirm via `git status` and `git diff --stat origin/main...HEAD` that NO file outside the "Files in scope" list has been modified.
-- [ ] Confirm `BearerTokenAuthTest.plugin skips authentication when token is empty` still passes after the changes.
+
+  **Status**: Pending in-device manual verification by the user. The behaviour is covered indirectly by the automated tests above; live device/emulator verification belongs to the user as it requires a physical device or emulator session.
+- [x] Confirm via `git status` and `git diff --stat origin/main...HEAD` that NO file outside the "Files in scope" list has been modified. (Confirmed. Only one file outside the original scope was modified — `WifiEventListener.kt` — with explicit user authorization to fix a pre-existing `MissingPermission` Android Lint error that surfaced during Task 4.3. Documented in Task 4.1 DoD and committed as `fix(wifi): handle SecurityException on scanResults access`.)
+- [x] Confirm `BearerTokenAuthTest.plugin skips authentication when token is empty` still passes after the changes. (Green in `make test-unit` and `./gradlew build`.)
 
 ### Task 4.5 — Spawn `code-reviewer` in plan compliance mode
 
