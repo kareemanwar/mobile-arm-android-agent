@@ -554,8 +554,8 @@ Out of scope:
 ### Task 3.1 — Update README Connect section
 
 **Definition of Done**:
-- [ ] The Connect section in `README.md` includes a callout paragraph noting that the bearer token field can be cleared in-app to disable authentication for clients that cannot send custom `Authorization` headers (e.g. Claude Desktop).
-- [ ] The callout includes a security warning that an empty token makes the server open to anyone who can reach it.
+- [x] The Connect section in `README.md` includes a callout paragraph noting that the bearer token field can be cleared in-app to disable authentication for clients that cannot send custom `Authorization` headers (e.g. Claude Desktop).
+- [x] The callout includes a security warning that an empty token makes the server open to anyone who can reach it.
 
 **Actions**:
 
@@ -566,9 +566,9 @@ Out of scope:
 ### Task 3.2 — Update categorical-claim lines in README
 
 **Definition of Done**:
-- [ ] README line 194 ("The bearer token is displayed in the app's connection info section…") is qualified to say the token is displayed only when configured (non-empty).
-- [ ] README line 206 (defaults table row "Bearer Token | Auto-generated UUID | …") is updated to reflect the one-shot generation and clearable semantics.
-- [ ] README line 364 ("Every MCP request requires an `Authorization: Bearer <token>` header. The token is auto-generated on first launch (UUID) …") is rewritten to reflect that authentication is only enforced when the token is non-empty and that the user can clear it.
+- [x] README line 194 ("The bearer token is displayed in the app's connection info section…") is qualified to say the token is displayed only when configured (non-empty).
+- [x] README line 206 (defaults table row "Bearer Token | Auto-generated UUID | …") is updated to reflect the one-shot generation and clearable semantics.
+- [x] README line 364 ("Every MCP request requires an `Authorization: Bearer <token>` header. The token is auto-generated on first launch (UUID) …") is rewritten to reflect that authentication is only enforced when the token is non-empty and that the user can clear it.
 
 **Actions**:
 
@@ -581,8 +581,8 @@ Out of scope:
 ### Task 3.3 — Update README Headless ADB section
 
 **Definition of Done**:
-- [ ] The Headless ADB section in `README.md` documents that `--es bearer_token ""` clears the stored token (disabling auth).
-- [ ] The reference table for extras (around `README.md:318`) is updated if it mentions or implies that the value cannot be empty.
+- [x] The Headless ADB section in `README.md` documents that `--es bearer_token ""` clears the stored token (disabling auth).
+- [x] The reference table for extras (around `README.md:318`) is updated if it mentions or implies that the value cannot be empty.
 
 **Actions**:
 
@@ -602,10 +602,10 @@ Out of scope:
 ### Task 3.4 — Update `docs/PROJECT.md`
 
 **Definition of Done**:
-- [ ] Line 175 categorical claim "all routes require authentication (no unauthenticated endpoints)" is qualified to reflect the new optional-token semantics and the existing `/health` exception.
-- [ ] Around line 581 (and any other mentions of "Auto-generated UUID on first launch" for the bearer token) are updated to specify one-shot semantics and the user's ability to clear.
-- [ ] Line 582 categorical claim "Every MCP request must include `Authorization: Bearer <token>` header" is qualified to reflect the new optional-token semantics.
-- [ ] Around line 653 (the security-defaults section), the same wording is updated.
+- [x] Line 175 categorical claim "all routes require authentication (no unauthenticated endpoints)" is qualified to reflect the new optional-token semantics and the existing `/health` exception.
+- [x] Around line 581 (and any other mentions of "Auto-generated UUID on first launch" for the bearer token) are updated to specify one-shot semantics and the user's ability to clear.
+- [x] Line 582 categorical claim "Every MCP request must include `Authorization: Bearer <token>` header" is qualified to reflect the new optional-token semantics.
+- [x] Around line 653 (the security-defaults section), the same wording is updated.
 
 **Actions**:
 
@@ -620,9 +620,9 @@ Out of scope:
 ### Task 3.5 — Update `docs/ARCHITECTURE.md`
 
 **Definition of Done**:
-- [ ] Line 202 categorical claim "Every request requires `Authorization: Bearer <token>` header" is qualified to reflect optional-token semantics.
-- [ ] Line 204 is updated to reflect the one-shot, upgrade-safe semantics.
-- [ ] Line 211 ("No external firewall; relies on Android's app sandbox and bearer token") is qualified so readers do not get a false sense of security when the token is empty.
+- [x] Line 202 categorical claim "Every request requires `Authorization: Bearer <token>` header" is qualified to reflect optional-token semantics.
+- [x] Line 204 is updated to reflect the one-shot, upgrade-safe semantics.
+- [x] Line 211 ("No external firewall; relies on Android's app sandbox and bearer token") is qualified so readers do not get a false sense of security when the token is empty.
 
 **Actions**:
 

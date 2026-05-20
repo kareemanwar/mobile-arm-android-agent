@@ -172,7 +172,7 @@ The application implements the **Model Context Protocol (MCP)** specification fr
 - **Transport**: Streamable HTTP (JSON-only, no SSE) via the MCP Kotlin SDK's `StreamableHttpServerTransport(enableJsonResponse = true)`
 - **Endpoint**: `POST /mcp` — Single MCP endpoint handling all protocol messages (initialize, tools/list, tools/call, etc.)
 - **Framework**: Ktor Server (async, coroutine-based)
-- **Authentication**: Global Application-level bearer token (`Authorization: Bearer <token>`) — all routes require authentication (no unauthenticated endpoints)
+- **Authentication**: Global Application-level bearer token (`Authorization: Bearer <token>`) is enforced on all routes EXCEPT `/health` when the token is configured (non-empty). When the bearer token is empty, the `BearerTokenAuthPlugin` skips authentication entirely (intended for clients that cannot send custom headers, e.g. Claude Desktop). The `/health` endpoint remains unauthenticated in all states.
 - **Content-Type**: `application/json`
 - **Compatibility**: Standard MCP clients (`mcp-remote`, Claude Desktop, etc.) can connect via the standard `/mcp` endpoint
 
@@ -578,8 +578,8 @@ HomeScreen contains a TopAppBar, then a scrollable layout with: ServerStatusCard
 ### Bearer Token Security
 
 - Stored in DataStore (Preferences DataStore, accessed via `SettingsRepository`)
-- Auto-generated UUID on first launch; user can view/copy/regenerate via UI
-- Every MCP request must include `Authorization: Bearer <token>` header
+- Auto-generated UUID exactly once on first launch (preserved across app upgrades); user can view, copy, regenerate, or clear via the UI. Clearing the token disables bearer-token authentication on the MCP server.
+- When the bearer token is configured (non-empty), every MCP request must include an `Authorization: Bearer <token>` header. When the bearer token is empty, the server skips authentication entirely.
 - Constant-time comparison to prevent timing attacks; return `401 Unauthorized` if invalid/missing
 
 ### HTTPS (Optional — Disabled by Default)
@@ -650,7 +650,7 @@ MCP tools return data originating from the Android device (UI element text, cont
 
 - **Port**: `8080`
 - **Binding Address**: `127.0.0.1` (localhost)
-- **Bearer Token**: Auto-generated UUID on first launch
+- **Bearer Token**: Auto-generated UUID once on first launch (persisted, upgrade-safe); can be cleared in-app or via `--es bearer_token ""` to disable authentication.
 - **HTTPS**: Disabled by default (HTTP is the primary transport). When enabled by the user, uses auto-generated self-signed certificate with hostname "android-mcp.local", 1-year validity. Clients must allow insecure/self-signed certificates.
 - **Auto-start on Boot**: Disabled
 - **Remote Access Tunnel**: Disabled by default

@@ -199,16 +199,16 @@ sequenceDiagram
 
 ### Bearer Token (Authentication)
 
-- Every request requires `Authorization: Bearer <token>` header (global Application-level plugin)
+- When the token is configured (non-empty), every request requires an `Authorization: Bearer <token>` header (global Application-level plugin). When the token is empty, the plugin skips authentication entirely.
 - Token validated with constant-time comparison (prevents timing attacks)
-- Token auto-generated (UUID) on first launch, user can regenerate
+- Token auto-generated (UUID) once on first launch (existing tokens preserved on upgrade), persisted; user can regenerate or clear. When the token is empty, the `BearerTokenAuthPlugin` skips authentication entirely.
 - Token stored in DataStore (app-private)
 
 ### Network Binding (Exposure Control)
 
 - Default: `127.0.0.1` (localhost only, requires `adb forward`)
 - Optional: `0.0.0.0` (all interfaces, with security warning)
-- No external firewall; relies on Android's app sandbox and bearer token
+- No external firewall; relies on Android's app sandbox, the network-binding choice (loopback by default), and the bearer token. When the bearer token is empty, the network binding is the only remaining layer — stay on loopback unless you trust the network.
 
 ---
 
