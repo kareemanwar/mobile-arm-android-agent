@@ -691,10 +691,10 @@ Out of scope:
 ### Task 4.5 — Spawn `code-reviewer` in plan compliance mode
 
 **Definition of Done**:
-- [ ] A single `code-reviewer` subagent is spawned to audit the implementation against this plan.
-- [ ] All reported findings (CRITICAL, WARNING, INFO) are addressed per the project rule "Handling review findings".
-- [ ] If any finding cannot be resolved or a deviation from the plan is preferred, the user is consulted; the user makes the final call.
-- [ ] The `code-reviewer` is re-spawned after fixes until it returns clean (zero CRITICAL and zero WARNING).
+- [x] A single `code-reviewer` subagent is spawned to audit the implementation against this plan.
+- [x] All reported findings (CRITICAL, WARNING, INFO) are addressed per the project rule "Handling review findings". (Reviewer reported zero findings — implementation matches the plan verbatim, including the WifiEventListener authorized out-of-scope fix.)
+- [x] If any finding cannot be resolved or a deviation from the plan is preferred, the user is consulted; the user makes the final call. (N/A — no findings.)
+- [x] The `code-reviewer` is re-spawned after fixes until it returns clean (zero CRITICAL and zero WARNING). (First pass clean. Verdict: **PASS**.)
 
 ---
 
