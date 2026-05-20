@@ -69,3 +69,8 @@ app/src/main/jniLibs/
 
 # Claude Code local settings
 .claude/settings.json
+
+# Channel plugin
+channel-plugin/node_modules/
+app/hs_err_*.log
+app/replay_*.log

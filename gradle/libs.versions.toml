@@ -15,6 +15,7 @@ datastore = "1.2.0"
 documentfile = "1.1.0"
 camerax = "1.5.2"
 play-services-location = "21.3.0"
+osmdroid = "6.1.20"
 
 # Networking
 ktor = "3.4.0"
@@ -96,6 +97,9 @@ camerax-video = { group = "androidx.camera", name = "camera-video", version.ref 
 # Google Play Services
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "play-services-location" }
 
+# OpenStreetMap
+osmdroid = { group = "org.osmdroid", name = "osmdroid-android", version.ref = "osmdroid" }
+
 # Ktor Server
 ktor-server-core = { group = "io.ktor", name = "ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { group = "io.ktor", name = "ktor-server-netty", version.ref = "ktor" }
@@ -117,8 +121,9 @@ mcp-kotlin-sdk-client = { group = "io.modelcontextprotocol", name = "kotlin-sdk-
 # SLF4J Android binding
 slf4j-android = { group = "org.slf4j", name = "slf4j-android", version.ref = "slf4j-android" }
 
-# Ktor Client (E2E tests and integration tests - SDK client transport needs Ktor client engine)
+# Ktor Client
 ktor-client-cio = { group = "io.ktor", name = "ktor-client-cio", version.ref = "ktor" }
+ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-sse = { group = "io.ktor", name = "ktor-sse", version.ref = "ktor" }
 

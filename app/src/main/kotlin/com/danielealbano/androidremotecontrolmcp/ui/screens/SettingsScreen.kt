@@ -10,13 +10,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.danielealbano.androidremotecontrolmcp.ui.navigation.SettingsRoute
+import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.ChannelSettingsScreen
 import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.GeneralSettingsScreen
+import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.GeofenceListScreen
+import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.GeofenceMapScreen
 import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.McpToolsSettingsScreen
+import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.NotificationFilterScreen
 import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.PermissionsSettingsScreen
 import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.SecuritySettingsScreen
 import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.SettingsIndexScreen
 import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.StorageSettingsScreen
 import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.TunnelSettingsScreen
+import com.danielealbano.androidremotecontrolmcp.ui.screens.settings.WifiMonitorScreen
+import com.danielealbano.androidremotecontrolmcp.ui.viewmodels.ChannelViewModel
 import com.danielealbano.androidremotecontrolmcp.ui.viewmodels.MainViewModel
 
 @Composable
@@ -29,6 +35,7 @@ fun SettingsScreen(
     onPendingRouteConsumed: () -> Unit = {},
     modifier: Modifier = Modifier,
     viewModel: MainViewModel = hiltViewModel(),
+    channelViewModel: ChannelViewModel = hiltViewModel(),
 ) {
     val navController = rememberNavController()
 
@@ -73,6 +80,50 @@ fun SettingsScreen(
         }
         composable(SettingsRoute.Storage.route) {
             StorageSettingsScreen(onBack = { navController.popBackStack() }, viewModel = viewModel)
+        }
+        composable(SettingsRoute.ChannelSettings.route) {
+            ChannelSettingsScreen(
+                viewModel = channelViewModel,
+                onNavigateToNotificationFilter = {
+                    navController.navigate(SettingsRoute.NotificationFilter.route)
+                },
+                onNavigateToWifiMonitor = {
+                    navController.navigate(SettingsRoute.WifiMonitor.route)
+                },
+                onNavigateToGeofenceList = {
+                    navController.navigate(SettingsRoute.GeofenceList.route)
+                },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable(SettingsRoute.NotificationFilter.route) {
+            NotificationFilterScreen(
+                viewModel = channelViewModel,
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable(SettingsRoute.WifiMonitor.route) {
+            WifiMonitorScreen(
+                viewModel = channelViewModel,
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable(SettingsRoute.GeofenceList.route) {
+            GeofenceListScreen(
+                viewModel = channelViewModel,
+                onNavigateToMap = { zoneId ->
+                    navController.navigate(SettingsRoute.GeofenceMap.createRoute(zoneId))
+                },
+                onNavigateBack = { navController.popBackStack() },
+            )
+        }
+        composable(SettingsRoute.GeofenceMap.route) { backStackEntry ->
+            val zoneId = backStackEntry.arguments?.getString("zoneId")?.ifEmpty { null }
+            GeofenceMapScreen(
+                viewModel = channelViewModel,
+                zoneId = zoneId,
+                onNavigateBack = { navController.popBackStack() },
+            )
         }
     }
 }

@@ -202,8 +202,11 @@ dependencies {
     implementation(libs.camerax.lifecycle)
     implementation(libs.camerax.video)
 
-    // Google Play Services Location
+    // Google Play Services
     implementation(libs.play.services.location)
+
+    // OpenStreetMap
+    implementation(libs.osmdroid)
 
     // Ktor Server
     implementation(libs.ktor.server.core)
@@ -211,6 +214,10 @@ dependencies {
     implementation(libs.ktor.server.content.negotiation)
     implementation(libs.ktor.network.tls.certificates)
     implementation(libs.ktor.serialization.kotlinx.json)
+
+    // Ktor Client (Event Channel dispatcher — no Logging plugin, it would expose auth token)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.content.negotiation)
 
     // Force patched Netty to fix CVE-2026-33870 (HTTP Request Smuggling)
     // and CVE-2026-33871 (HTTP/2 CONTINUATION Frame Flood DoS).
