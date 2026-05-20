@@ -327,12 +327,12 @@ Out of scope:
 | `serverConfig Flow does not generate bearer token` | Flow path remains unchanged: emits whatever is in DataStore without side effects. (Existing `Flow does not auto-generate bearer token when empty` around line 391 — keep as-is.) |
 
 **Definition of Done**:
-- [ ] The existing `auto-generates bearer token when empty` test is renamed and updated to assert the one-shot semantics described above (`BEARER_TOKEN_INITIALIZED_KEY` flag set).
-- [ ] A new test `getServerConfig preserves existing token on upgrade path` is added.
-- [ ] A new test `getServerConfig returns empty token after explicit clear` is added.
-- [ ] The existing `Flow does not auto-generate bearer token when empty` continues to pass unchanged.
-- [ ] Existing tests with names that reference "auto-generated" (e.g. `auto-generated bearer token is UUID format` ~line 103-113, `auto-generated bearer token is persisted` ~line 115-122, `Flow reflects token after getServerConfig auto-generates it` ~line 403-417) are LEFT UNCHANGED. Rationale: keep diff minimal; the names are honest as long as no token is pre-stored. If the implementer prefers, names may be updated to "generated on first call" wording — but this is optional and not required for plan completion.
-- [ ] No other tests in this file are altered unless they assert behavior contradicted by this change.
+- [x] The existing `auto-generates bearer token when empty` test is renamed and updated to assert the one-shot semantics described above (`BEARER_TOKEN_INITIALIZED_KEY` flag set).
+- [x] A new test `getServerConfig preserves existing token on upgrade path` is added.
+- [x] A new test `getServerConfig returns empty token after explicit clear` is added.
+- [x] The existing `Flow does not auto-generate bearer token when empty` continues to pass unchanged.
+- [x] Existing tests with names that reference "auto-generated" (e.g. `auto-generated bearer token is UUID format` ~line 103-113, `auto-generated bearer token is persisted` ~line 115-122, `Flow reflects token after getServerConfig auto-generates it` ~line 403-417) are LEFT UNCHANGED. Rationale: keep diff minimal; the names are honest as long as no token is pre-stored. If the implementer prefers, names may be updated to "generated on first call" wording — but this is optional and not required for plan completion.
+- [x] No other tests in this file are altered unless they assert behavior contradicted by this change.
 
 ### Task 1.11 — Unit test for `MainViewModel.clearBearerToken`
 
@@ -345,7 +345,7 @@ Out of scope:
 | `clearBearerToken delegates to repository with empty string` | Calling `viewModel.clearBearerToken()` then `advanceUntilIdle()` results in `coVerify(exactly = 1) { settingsRepository.updateBearerToken("") }`. **Setup**: ensure `ioDispatcher` is wired to the test `TestDispatcher` so the launched coroutine executes deterministically (this is already how `generateNewBearerToken` is tested in the file — mirror that pattern). |
 
 **Definition of Done**:
-- [ ] Test added and follows the file's existing arrange-act-assert + `runTest` + `advanceUntilIdle()` pattern.
+- [x] Test added and follows the file's existing arrange-act-assert + `runTest` + `advanceUntilIdle()` pattern.
 
 ### Task 1.12 — Unit test for `AdbConfigHandler` empty bearer token
 
@@ -360,9 +360,9 @@ Out of scope:
 | `non-empty bearer_token is applied as before` | Existing `bearer_token is applied when provided` test around line 144-152 — keep unchanged. |
 
 **Definition of Done**:
-- [ ] The existing `empty bearer_token is ignored` test is replaced with `empty bearer_token clears the stored token` reflecting the new semantics.
-- [ ] A new test `missing bearer_token extra leaves token untouched` is added to cover the `?: return` branch.
-- [ ] Other related tests at lines 516, 532, and 740 are re-examined; if any of them rely on the "ignore empty" behavior, they MUST be updated to match the new semantics.
+- [x] The existing `empty bearer_token is ignored` test is replaced with `empty bearer_token clears the stored token` reflecting the new semantics.
+- [x] A new test `missing bearer_token extra leaves token untouched` is added to cover the `?: return` branch.
+- [x] Other related tests at lines 516, 532, and 740 are re-examined; if any of them rely on the "ignore empty" behavior, they MUST be updated to match the new semantics. (Re-examined: line 516 asserts non-empty token update, line 532 `noExtras` and line 740 `unknownActionIgnored` assert `exactly = 0` updates when the extra is absent — none rely on the old "ignore empty when present" behavior. No changes required.)
 
 ---
 
