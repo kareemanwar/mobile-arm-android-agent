@@ -47,15 +47,9 @@ class McpNotificationListenerService : NotificationListenerService() {
     override fun onNotificationPosted(sbn: StatusBarNotification) {
         if (sbn.packageName == applicationContext.packageName) return
         val data = NotificationDataExtractor.extract(sbn, applicationContext)
-        if (isEmptyNotification(data)) return
-
-        // Deduplicate: skip if content hasn't changed since last time
-        val contentHash = computeContentHash(data)
         val now = System.currentTimeMillis()
-        val previous = lastSeenContentHash.put(sbn.key, ContentHashEntry(contentHash, now))
-        if (previous != null && previous.hash == contentHash) return
+        if (isEmptyNotification(data) || isDuplicate(sbn.key, data, now)) return
 
-        // Evict expired entries periodically
         if (lastSeenContentHash.size > CACHE_EVICTION_THRESHOLD) {
             evictExpiredEntries(now)
         }
@@ -69,6 +63,16 @@ class McpNotificationListenerService : NotificationListenerService() {
     private fun isEmptyNotification(data: NotificationData): Boolean =
         data.title == null && data.text == null && data.bigText == null && data.actions.isEmpty()
 
+    private fun isDuplicate(
+        key: String,
+        data: NotificationData,
+        now: Long,
+    ): Boolean {
+        val contentHash = computeContentHash(data)
+        val previous = lastSeenContentHash.put(key, ContentHashEntry(contentHash, now))
+        return previous != null && previous.hash == contentHash
+    }
+
     override fun onNotificationRemoved(sbn: StatusBarNotification) {
         if (sbn.packageName == applicationContext.packageName) return
         lastSeenContentHash.remove(sbn.key)
@@ -80,10 +84,10 @@ class McpNotificationListenerService : NotificationListenerService() {
 
     private fun computeContentHash(data: NotificationData): Int {
         var hash = data.title?.hashCode() ?: 0
-        hash = 31 * hash + (data.text?.hashCode() ?: 0)
-        hash = 31 * hash + (data.bigText?.hashCode() ?: 0)
-        hash = 31 * hash + (data.subText?.hashCode() ?: 0)
-        hash = 31 * hash + data.actions.size
+        hash = HASH_PRIME * hash + (data.text?.hashCode() ?: 0)
+        hash = HASH_PRIME * hash + (data.bigText?.hashCode() ?: 0)
+        hash = HASH_PRIME * hash + (data.subText?.hashCode() ?: 0)
+        hash = HASH_PRIME * hash + data.actions.size
         return hash
     }
 
@@ -120,6 +124,7 @@ class McpNotificationListenerService : NotificationListenerService() {
         private const val TAG = "MCP:NotificationListener"
         private const val CACHE_TTL_MS = 24 * 60 * 60 * 1000L // 1 day
         private const val CACHE_EVICTION_THRESHOLD = 100
+        private const val HASH_PRIME = 31
 
         @Volatile
         var instance: McpNotificationListenerService? = null
