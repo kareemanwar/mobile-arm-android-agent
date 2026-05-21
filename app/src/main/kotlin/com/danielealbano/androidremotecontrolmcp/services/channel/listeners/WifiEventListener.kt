@@ -137,7 +137,14 @@ class WifiEventListener(
     // object not directly comparable to String. No non-deprecated String SSID accessor exists.
     private fun handleScanResults() {
         val cfg = currentConfig
-        val results = wifiManager?.scanResults ?: return
+        val results =
+            try {
+                wifiManager?.scanResults ?: return
+            } catch (e: SecurityException) {
+                // ACCESS_FINE_LOCATION / NEARBY_WIFI_DEVICES may have been revoked at runtime.
+                android.util.Log.w(TAG, "Wi-Fi scan results unavailable (permission denied)", e)
+                return
+            }
         val currentSsids =
             results
                 .mapNotNull { it.SSID }
@@ -168,6 +175,7 @@ class WifiEventListener(
     }
 
     companion object {
+        private const val TAG = "MCP:WifiEventListener"
         private const val SCAN_INTERVAL_MS = 120_000L // 2 minutes
     }
 }

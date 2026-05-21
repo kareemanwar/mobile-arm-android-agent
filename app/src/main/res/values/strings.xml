@@ -71,6 +71,9 @@
     <string name="config_token_hide">Hide token</string>
     <string name="config_token_copy">Copy token</string>
     <string name="config_token_regenerate">Regenerate token</string>
+    <string name="config_token_clear">Clear token</string>
+    <string name="config_bearer_token_empty_warning_title">Authentication disabled</string>
+    <string name="config_bearer_token_empty_warning_body">The bearer token is empty, so the MCP server accepts unauthenticated requests from anyone who can reach it. Stop the server (if running), then press Regenerate to enable authentication.</string>
     <string name="config_auto_start_label">Auto-start on boot</string>
     <string name="config_https_enabled_label">Enable HTTPS</string>
     <string name="config_certificate_title">HTTPS Certificate</string>
@@ -168,4 +171,9 @@
     <string name="storage_allow_http_downloads_description">Allow downloading files from unencrypted HTTP URLs (less secure)</string>
     <string name="storage_allow_unverified_https_label">Allow Unverified HTTPS</string>
     <string name="storage_allow_unverified_https_description">Accept unverified HTTPS certificates for downloads (less secure)</string>
+
+    <!-- Event Channel — start/stop dialogs -->
+    <string name="channel_not_configured_dialog_title">Endpoint URL not set</string>
+    <string name="channel_not_configured_dialog_body">Configure the event channel endpoint URL in Settings → Event Channel before starting the service. The auth token is optional and can be left empty if your endpoint does not require it.</string>
+    <string name="channel_not_configured_dialog_ok">OK</string>
 </resources>

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import app.cash.turbine.test
@@ -93,11 +94,48 @@ class SettingsRepositoryImplTest {
             }
 
         @Test
-        fun `auto-generates bearer token when empty`() =
+        fun `getServerConfig generates token on first call when none stored`() =
             testScope.runTest {
                 val config = repository.getServerConfig()
 
                 assertTrue(config.bearerToken.isNotEmpty())
+                val initialized = dataStore.data.first()[booleanPreferencesKey("bearer_token_initialized")]
+                assertEquals(true, initialized)
+            }
+
+        @Test
+        fun `getServerConfig preserves existing token on upgrade path`() =
+            testScope.runTest {
+                // Simulate an upgrade: a non-empty token was persisted by a previous
+                // app version that did not yet write the BEARER_TOKEN_INITIALIZED flag.
+                dataStore.edit { prefs ->
+                    prefs[stringPreferencesKey("bearer_token")] = "legacy-token"
+                }
+
+                val config = repository.getServerConfig()
+
+                assertEquals("legacy-token", config.bearerToken)
+                val initialized = dataStore.data.first()[booleanPreferencesKey("bearer_token_initialized")]
+                assertEquals(true, initialized)
+            }
+
+        @Test
+        fun `getServerConfig returns empty token after explicit clear`() =
+            testScope.runTest {
+                // First call generates the token and sets the initialized flag.
+                val generated = repository.getServerConfig()
+                assertTrue(generated.bearerToken.isNotEmpty())
+
+                // Explicit clear via updateBearerToken("").
+                repository.updateBearerToken("")
+
+                // Second call must return the empty token AS-IS — no regeneration.
+                val cleared = repository.getServerConfig()
+                assertEquals("", cleared.bearerToken)
+
+                // The initialized flag remains true.
+                val initialized = dataStore.data.first()[booleanPreferencesKey("bearer_token_initialized")]
+                assertEquals(true, initialized)
             }
 
         @Test

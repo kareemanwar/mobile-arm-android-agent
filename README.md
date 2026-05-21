@@ -135,6 +135,8 @@ Add the server to your `.mcp.json` configuration file:
 
 Replace `DEVICE_IP`, `PORT`, and `YOUR_TOKEN` with the values shown in the app's Server tab. If the server is bound to localhost (default), you'll need [adb port forwarding](#using-with-adb-port-forwarding) or a [remote access tunnel](#using-remote-access-tunnels) to connect.
 
+> **Note for clients without custom-header support (e.g. Claude Desktop):** if your MCP client cannot send an `Authorization` header, you can clear the bearer token in the app (Settings → General → Bearer Token → Clear). When the token is empty, the server skips authentication entirely. Only do this on a network you trust — anyone who can reach the server will be able to use it.
+
 ### Other MCP Clients
 
 The MCP server exposes a standard Streamable HTTP endpoint at `/mcp` with bearer token authentication. Any MCP-compatible client can connect to it — refer to your client's documentation for the specific configuration format.
@@ -191,7 +193,7 @@ curl -X POST http://localhost:8080/mcp \
 
 Replace `SESSION_ID` with the `mcp-session-id` value from the initialize response headers.
 
-The bearer token is displayed in the app's connection info section. You can copy it directly from the app.
+When configured (non-empty), the bearer token is displayed in the app's connection info section and can be copied directly from the app. When the token is cleared, the row is hidden and the server accepts unauthenticated requests.
 
 ---
 
@@ -203,7 +205,7 @@ The bearer token is displayed in the app's connection info section. You can copy
 |---------|---------|-------------|
 | Port | `8080` | HTTP/HTTPS server port |
 | Binding Address | `127.0.0.1` | `127.0.0.1` (localhost, use with adb port forwarding) or `0.0.0.0` (network, all interfaces) |
-| Bearer Token | Auto-generated UUID | Authentication token for MCP requests |
+| Bearer Token | Auto-generated UUID (one-shot, clearable) | Authentication token for MCP requests. Cleared = authentication disabled. |
 | HTTPS | Disabled | Enable HTTPS with auto-generated self-signed certificate (configurable hostname) or upload custom .p12/.pfx |
 | Auto-start on Boot | Disabled | Start MCP server automatically when device boots |
 | Device Slug | Empty | Optional device identifier for tool name prefix (e.g., `pixel7` makes tools `android_pixel7_tap`) |
@@ -313,9 +315,19 @@ adb shell am broadcast \
   --es tool_permissions '{"disabled_tools":["tap"],"disabled_params":{"swipe":["duration_ms"]}}'
 ```
 
+```bash
+# Clear the bearer token (disables authentication; see Security section)
+adb shell am broadcast \
+  -a com.danielealbano.androidremotecontrolmcp.ADB_CONFIGURE \
+  -n <app-id>/com.danielealbano.androidremotecontrolmcp.services.mcp.AdbConfigReceiver \
+  --es bearer_token ""
+```
+
+Passing `--es bearer_token ""` clears the stored token. The MCP server skips authentication when the token is empty — use only on trusted networks.
+
 | Extra | Type | Description |
 |-------|------|-------------|
-| `bearer_token` | string | Authentication token for MCP requests |
+| `bearer_token` | string | Authentication token for MCP requests (empty string clears the token and disables auth) |
 | `binding_address` | string | `127.0.0.1` (localhost) or `0.0.0.0` (network) |
 | `port` | int | HTTP/HTTPS server port (1-65535) |
 | `auto_start_on_boot` | boolean | Start MCP server when device boots |
@@ -361,7 +373,7 @@ The application runs entirely within Android's standard permission model. No roo
 
 ### Authentication
 
-Every MCP request requires an `Authorization: Bearer <token>` header. The token is auto-generated on first launch (UUID) and can be viewed, copied, and regenerated in the app.
+When the bearer token is configured (non-empty), every MCP request must carry an `Authorization: Bearer <token>` header. The token is auto-generated once on first launch (UUID, preserved across app upgrades) and can be viewed, copied, regenerated, or cleared in the app. When the token is empty, the MCP server skips authentication entirely — see the security note in the Connect section.
 
 ### Network Security
 

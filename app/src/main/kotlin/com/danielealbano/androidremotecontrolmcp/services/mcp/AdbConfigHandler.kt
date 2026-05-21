@@ -65,12 +65,12 @@ class AdbConfigHandler(
 
     private suspend fun applyBearerToken(intent: Intent) {
         val value = intent.getStringExtra(EXTRA_BEARER_TOKEN) ?: return
-        if (value.isEmpty()) {
-            Log.w(TAG, "Ignoring empty bearer_token")
-            return
-        }
         settingsRepository.updateBearerToken(value)
-        Log.i(TAG, "Bearer token updated (length=${value.length})")
+        if (value.isEmpty()) {
+            Log.i(TAG, "Bearer token cleared")
+        } else {
+            Log.i(TAG, "Bearer token updated (length=${value.length})")
+        }
     }
 
     private suspend fun applyBindingAddress(intent: Intent) {

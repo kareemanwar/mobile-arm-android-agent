@@ -90,34 +90,36 @@ fun ConnectionInfoCard(
                 )
             }
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = "${stringResource(R.string.connection_info_token)}: ",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Text(
-                    text = displayToken,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.weight(1f),
-                )
-                IconButton(onClick = { showToken = !showToken }) {
-                    Icon(
-                        imageVector =
-                            if (showToken) {
-                                Icons.Default.VisibilityOff
-                            } else {
-                                Icons.Default.Visibility
-                            },
-                        contentDescription =
-                            if (showToken) {
-                                stringResource(R.string.config_token_hide)
-                            } else {
-                                stringResource(R.string.config_token_show)
-                            },
+            if (bearerToken.isNotEmpty()) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "${stringResource(R.string.connection_info_token)}: ",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
+                    Text(
+                        text = displayToken,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.weight(1f),
+                    )
+                    IconButton(onClick = { showToken = !showToken }) {
+                        Icon(
+                            imageVector =
+                                if (showToken) {
+                                    Icons.Default.VisibilityOff
+                                } else {
+                                    Icons.Default.Visibility
+                                },
+                            contentDescription =
+                                if (showToken) {
+                                    stringResource(R.string.config_token_hide)
+                                } else {
+                                    stringResource(R.string.config_token_show)
+                                },
+                        )
+                    }
                 }
             }
 
@@ -127,7 +129,9 @@ fun ConnectionInfoCard(
                 buildString {
                     append("URL: $serverUrl")
                     tunnelUrl?.let { append("\nTunnel: $it/mcp") }
-                    append("\nBearer Token: $bearerToken")
+                    if (bearerToken.isNotEmpty()) {
+                        append("\nBearer Token: $bearerToken")
+                    }
                 }
             Row(
                 modifier = Modifier.align(Alignment.End),

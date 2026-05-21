@@ -153,12 +153,26 @@ class AdbConfigHandlerTest {
             }
 
         @Test
-        @DisplayName("empty bearer_token is ignored")
-        fun emptyBearerTokenIgnored() =
+        @DisplayName("empty bearer_token clears the stored token")
+        fun emptyBearerTokenClears() =
             runTest {
                 val intent =
                     createIntent(AdbConfigReceiver.ACTION_CONFIGURE) {
                         string(AdbConfigHandler.EXTRA_BEARER_TOKEN, "")
+                    }
+                handler.handle(context, intent)
+                coVerify(exactly = 1) { settingsRepository.updateBearerToken("") }
+            }
+
+        @Test
+        @DisplayName("missing bearer_token extra leaves token untouched")
+        fun missingBearerTokenExtraIgnored() =
+            runTest {
+                // Intent has other extras but no bearer_token: applyBearerToken's
+                // `?: return` branch must keep the stored token untouched.
+                val intent =
+                    createIntent(AdbConfigReceiver.ACTION_CONFIGURE) {
+                        int(AdbConfigHandler.EXTRA_PORT, 9090)
                     }
                 handler.handle(context, intent)
                 coVerify(exactly = 0) { settingsRepository.updateBearerToken(any()) }
