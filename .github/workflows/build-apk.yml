@@ -37,8 +37,8 @@ permissions:
   contents: read
 
 jobs:
-  build-debug-apk:
-    name: Build debug APK
+  build-apks:
+    name: Build APK artifacts
     runs-on: ubuntu-latest
     timeout-minutes: 120
 
@@ -76,7 +76,7 @@ jobs:
         run: |
           rustup target add aarch64-linux-android x86_64-linux-android
 
-      - name: Build debug APK
+      - name: Build native dependencies and debug APK
         shell: bash
         env:
           ANDROID_HOME: ${{ env.ANDROID_HOME }}
@@ -86,10 +86,23 @@ jobs:
           chmod +x ./gradlew
           make build
 
+      - name: Build release-like APK
+        shell: bash
+        run: |
+          ./gradlew :app:assembleGithubRelease
+
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
           name: android-mcp-debug-apk
           path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload release-like APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-mcp-release-like-apk
+          path: app/build/outputs/apk/githubRelease/*.apk
           if-no-files-found: error
           retention-days: 14
