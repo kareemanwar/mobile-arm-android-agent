@@ -1,0 +1,118 @@
+name: Android 12 Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/android12-smoke-test.yml"
+      - "app/**"
+      - "gradle/**"
+      - "vendor/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+      - "Makefile"
+      - "gradlew"
+      - "gradlew.bat"
+
+permissions:
+  contents: read
+
+jobs:
+  launch-test:
+    name: Install and launch on API 31
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;36.0.0" \
+            "ndk;27.2.12479018"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Rust targets
+        shell: bash
+        run: |
+          rustup target add aarch64-linux-android x86_64-linux-android
+
+      - name: Build APK
+        shell: bash
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+          JAVA_HOME_17: ${{ env.JAVA_HOME }}
+        run: |
+          chmod +x ./gradlew
+          make build
+
+      - name: Run launch check on API 31
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 31
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          disable-animations: true
+          script: |
+            set +e
+            mkdir -p test-output
+            APP_ID="$(grep -m1 'applicationId =' app/build.gradle.kts | cut -d '"' -f2).debug"
+            echo "$APP_ID" > test-output/app-id.txt
+            adb devices > test-output/devices.txt
+            adb logcat -c
+            adb install -r app/build/outputs/apk/debug/app-debug.apk > test-output/install.txt 2>&1
+            INSTALL_EXIT=$?
+            if [ "$INSTALL_EXIT" -ne 0 ]; then
+              adb logcat -d -v time > test-output/logs.txt
+              exit $INSTALL_EXIT
+            fi
+            adb shell monkey -p "$APP_ID" -c android.intent.category.LAUNCHER 1 > test-output/launch.txt 2>&1
+            LAUNCH_EXIT=$?
+            sleep 15
+            adb shell pidof "$APP_ID" > test-output/pid.txt 2>&1
+            PID_EXIT=$?
+            adb logcat -d -v time > test-output/logs.txt
+            adb shell dumpsys activity activities > test-output/activity.txt 2>&1 || true
+            echo "launch_exit=$LAUNCH_EXIT" > test-output/exit.txt
+            echo "pid_exit=$PID_EXIT" >> test-output/exit.txt
+            if [ "$LAUNCH_EXIT" -ne 0 ]; then
+              exit $LAUNCH_EXIT
+            fi
+            if [ "$PID_EXIT" -ne 0 ]; then
+              exit 1
+            fi
+
+      - name: Upload test output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android12-smoke-test-output
+          path: test-output/**
+          if-no-files-found: warn
+          retention-days: 14
