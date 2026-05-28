@@ -127,6 +127,13 @@ android {
                 signingConfig = signingConfigs.getByName("release")
             }
         }
+        create("githubRelease") {
+            initWith(getByName("release"))
+            matchingFallbacks += listOf("release")
+            isDebuggable = false
+            isMinifyEnabled = false
+            signingConfig = signingConfigs.getByName("debug")
+        }
     }
 
     compileOptions {
