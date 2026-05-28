@@ -1,0 +1,95 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-apk.yml"
+      - "app/**"
+      - "compose-test-app/**"
+      - "e2e-tests/**"
+      - "gradle/**"
+      - "vendor/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+      - "Makefile"
+      - "gradlew"
+      - "gradlew.bat"
+  pull_request:
+    paths:
+      - ".github/workflows/build-apk.yml"
+      - "app/**"
+      - "compose-test-app/**"
+      - "e2e-tests/**"
+      - "gradle/**"
+      - "vendor/**"
+      - "build.gradle.kts"
+      - "settings.gradle.kts"
+      - "gradle.properties"
+      - "Makefile"
+      - "gradlew"
+      - "gradlew.bat"
+
+permissions:
+  contents: read
+
+jobs:
+  build-debug-apk:
+    name: Build debug APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android SDK packages
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;36.0.0" \
+            "ndk;27.2.12479018"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Rust Android targets
+        shell: bash
+        run: |
+          rustup target add aarch64-linux-android x86_64-linux-android
+
+      - name: Build debug APK
+        shell: bash
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
+          JAVA_HOME_17: ${{ env.JAVA_HOME }}
+        run: |
+          chmod +x ./gradlew
+          make build
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-mcp-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
