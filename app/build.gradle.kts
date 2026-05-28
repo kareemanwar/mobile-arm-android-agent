@@ -87,7 +87,8 @@ android {
 
     defaultConfig {
         applicationId = "com.danielealbano.androidremotecontrolmcp"
-        minSdk = 33
+        // Android 12 / API 31 is the oldest supported device target.
+        minSdk = 31
         targetSdk = 34
         versionCode = versionCodeProp
         versionName = versionNameProp
@@ -102,7 +103,7 @@ android {
         signingConfigs {
             create("release") {
                 storeFile = file(keystoreProperties["storeFile"] as String)
-                storePassword = keystoreProperties["storePassword"] as String
+                storePassword = keystoreProperties["storePassword"] as String)
                 keyAlias = keystoreProperties["keyAlias"] as String
                 keyPassword = keystoreProperties["keyPassword"] as String
             }
@@ -346,7 +347,7 @@ tasks.register<JacocoReport>("jacocoTestReport") {
         html.required.set(true)
         html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/jacocoTestReport/html"))
         xml.required.set(true)
-        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/jacocoTestReport/jacocoTestReport.xml"))
+        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/jacocoTestReport.xml"))
         csv.required.set(false)
     }
 
