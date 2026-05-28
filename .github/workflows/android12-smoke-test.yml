@@ -88,10 +88,8 @@ jobs:
             adb logcat -c
             adb install -r app/build/outputs/apk/debug/app-debug.apk > test-output/install.txt 2>&1
             INSTALL_EXIT=$?
-            if [ "$INSTALL_EXIT" -ne 0 ]; then
-              adb logcat -d -v time > test-output/logs.txt
-              exit $INSTALL_EXIT
-            fi
+            test "$INSTALL_EXIT" -eq 0 || adb logcat -d -v time > test-output/logs.txt
+            test "$INSTALL_EXIT" -eq 0 || exit "$INSTALL_EXIT"
             adb shell monkey -p "$APP_ID" -c android.intent.category.LAUNCHER 1 > test-output/launch.txt 2>&1
             LAUNCH_EXIT=$?
             sleep 15
@@ -101,12 +99,8 @@ jobs:
             adb shell dumpsys activity activities > test-output/activity.txt 2>&1 || true
             echo "launch_exit=$LAUNCH_EXIT" > test-output/exit.txt
             echo "pid_exit=$PID_EXIT" >> test-output/exit.txt
-            if [ "$LAUNCH_EXIT" -ne 0 ]; then
-              exit $LAUNCH_EXIT
-            fi
-            if [ "$PID_EXIT" -ne 0 ]; then
-              exit 1
-            fi
+            test "$LAUNCH_EXIT" -eq 0 || exit "$LAUNCH_EXIT"
+            test "$PID_EXIT" -eq 0 || exit 1
 
       - name: Upload test output
         if: always()
