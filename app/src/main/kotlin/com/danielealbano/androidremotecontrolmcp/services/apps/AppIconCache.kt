@@ -2,6 +2,7 @@ package com.danielealbano.androidremotecontrolmcp.services.apps
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
 import com.danielealbano.androidremotecontrolmcp.utils.Logger
@@ -134,9 +135,12 @@ class AppIconCache
             try {
                 val bitmap = pm.getApplicationIcon(packageId).toBitmap(ICON_SIZE_PX, ICON_SIZE_PX)
                 cache[packageId] = bitmap
-            } catch (e: Exception) {
-                // App may have been uninstalled or icon unavailable
+            } catch (e: PackageManager.NameNotFoundException) {
                 Logger.e(TAG, "Failed to load app icon for $packageId", e)
+            } catch (e: Resources.NotFoundException) {
+                Logger.e(TAG, "Failed to load app icon resources for $packageId", e)
+            } catch (e: IllegalArgumentException) {
+                Logger.e(TAG, "Failed to convert app icon for $packageId", e)
             }
         }
 
