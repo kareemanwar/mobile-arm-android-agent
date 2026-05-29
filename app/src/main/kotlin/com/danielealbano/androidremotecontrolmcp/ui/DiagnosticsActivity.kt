@@ -1,3 +1,5 @@
+@file:Suppress("LongMethod", "MagicNumber")
+
 package com.danielealbano.androidremotecontrolmcp.ui
 
 import android.app.Activity
