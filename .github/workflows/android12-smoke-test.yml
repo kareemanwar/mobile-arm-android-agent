@@ -80,27 +80,18 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: |
-            set +e
             mkdir -p test-output
-            APP_ID="$(grep -m1 'applicationId =' app/build.gradle.kts | cut -d '"' -f2).debug"
-            echo "$APP_ID" > test-output/app-id.txt
+            echo "com.danielealbano.androidremotecontrolmcp.debug" > test-output/app-id.txt
             adb devices > test-output/devices.txt
             adb logcat -c || true
-            adb install -r app/build/outputs/apk/debug/app-debug.apk > test-output/install.txt 2>&1
-            INSTALL_EXIT=$?
-            test "$INSTALL_EXIT" -eq 0 || adb logcat -d -v time > test-output/logs.txt 2>&1 || true
-            test "$INSTALL_EXIT" -eq 0 || exit "$INSTALL_EXIT"
-            adb shell monkey -p "$APP_ID" -c android.intent.category.LAUNCHER 1 > test-output/launch.txt 2>&1
-            LAUNCH_EXIT=$?
+            adb install -r app/build/outputs/apk/debug/app-debug.apk > test-output/install.txt 2>&1 || (adb logcat -d -v time > test-output/logs.txt 2>&1 || true; exit 1)
+            adb shell monkey -p com.danielealbano.androidremotecontrolmcp.debug -c android.intent.category.LAUNCHER 1 > test-output/launch.txt 2>&1 || (adb logcat -d -v time > test-output/logs.txt 2>&1 || true; exit 1)
             sleep 15
-            adb shell pidof "$APP_ID" > test-output/pid.txt 2>&1
-            PID_EXIT=$?
+            adb shell pidof com.danielealbano.androidremotecontrolmcp.debug > test-output/pid.txt 2>&1 || (adb logcat -d -v time > test-output/logs.txt 2>&1 || true; adb shell dumpsys activity activities > test-output/activity.txt 2>&1 || true; exit 1)
             adb logcat -d -v time > test-output/logs.txt 2>&1 || true
             adb shell dumpsys activity activities > test-output/activity.txt 2>&1 || true
-            echo "launch_exit=$LAUNCH_EXIT" > test-output/exit.txt
-            echo "pid_exit=$PID_EXIT" >> test-output/exit.txt
-            test "$LAUNCH_EXIT" -eq 0 || exit "$LAUNCH_EXIT"
-            test "$PID_EXIT" -eq 0 || exit 1
+            echo "launch_exit=0" > test-output/exit.txt
+            echo "pid_exit=0" >> test-output/exit.txt
 
       - name: Upload test output
         if: always()
