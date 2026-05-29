@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import androidx.core.graphics.drawable.toBitmap
 import com.danielealbano.androidremotecontrolmcp.utils.Logger
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -28,7 +29,11 @@ class AppIconCache
         @ApplicationContext private val context: Context,
     ) {
         private val cache = ConcurrentHashMap<String, Bitmap>()
-        private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        private val exceptionHandler =
+            CoroutineExceptionHandler { _, throwable ->
+                Logger.e(TAG, "Unhandled app icon cache error", throwable)
+            }
+        private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO + exceptionHandler)
 
         @Volatile
         private var launchableApps: List<Pair<String, String>> = emptyList()
@@ -39,13 +44,17 @@ class AppIconCache
          */
         fun preload(count: Int = PRELOAD_COUNT) {
             scope.launch {
-                val pm = context.packageManager
-                val apps = getLaunchableAppsSorted(pm)
-                launchableApps = apps
-                for (app in apps.take(count)) {
-                    loadAndCache(pm, app.first)
+                runCatching {
+                    val pm = context.packageManager
+                    val apps = getLaunchableAppsSorted(pm)
+                    launchableApps = apps
+                    for (app in apps.take(count)) {
+                        loadAndCache(pm, app.first)
+                    }
+                    Logger.d(TAG, "Preloaded ${apps.size} apps, ${cache.size} icons")
+                }.onFailure { throwable ->
+                    Logger.e(TAG, "Failed to preload app icons", throwable)
                 }
-                Logger.d(TAG, "Preloaded ${apps.size} apps, ${cache.size} icons")
             }
         }
 
@@ -55,7 +64,12 @@ class AppIconCache
          */
         fun getLaunchableApps(): List<Pair<String, String>> {
             if (launchableApps.isNotEmpty()) return launchableApps
-            val apps = getLaunchableAppsSorted(context.packageManager)
+            val apps =
+                runCatching {
+                    getLaunchableAppsSorted(context.packageManager)
+                }.onFailure { throwable ->
+                    Logger.e(TAG, "Failed to query launchable apps", throwable)
+                }.getOrDefault(emptyList())
             launchableApps = apps
             return apps
         }
@@ -78,31 +92,36 @@ class AppIconCache
          */
         fun refresh(onUpdated: () -> Unit = {}) {
             scope.launch {
-                val pm = context.packageManager
-                val freshApps = getLaunchableAppsSorted(pm)
-                val freshIds = freshApps.map { it.first }.toSet()
-                val cachedIds = launchableApps.map { it.first }.toSet()
+                runCatching {
+                    val pm = context.packageManager
+                    val freshApps = getLaunchableAppsSorted(pm)
+                    val freshIds = freshApps.map { it.first }.toSet()
+                    val cachedIds = launchableApps.map { it.first }.toSet()
 
-                // Remove uninstalled apps from icon cache
-                for (removedId in cachedIds - freshIds) {
-                    cache.remove(removedId)
-                }
-
-                // Update the app list
-                launchableApps = freshApps
-
-                // Emit immediately so the UI shows the updated list
-                onUpdated()
-
-                // Load icons for any uncached apps (new installs + previously unloaded)
-                val uncached = freshApps.filter { !cache.containsKey(it.first) }
-                if (uncached.isNotEmpty()) {
-                    for (chunk in uncached.chunked(LOAD_CHUNK_SIZE)) {
-                        for (app in chunk) {
-                            loadAndCache(pm, app.first)
-                        }
-                        onUpdated()
+                    // Remove uninstalled apps from icon cache
+                    for (removedId in cachedIds - freshIds) {
+                        cache.remove(removedId)
                     }
+
+                    // Update the app list
+                    launchableApps = freshApps
+
+                    // Emit immediately so the UI shows the updated list
+                    onUpdated()
+
+                    // Load icons for any uncached apps (new installs + previously unloaded)
+                    val uncached = freshApps.filter { !cache.containsKey(it.first) }
+                    if (uncached.isNotEmpty()) {
+                        for (chunk in uncached.chunked(LOAD_CHUNK_SIZE)) {
+                            for (app in chunk) {
+                                loadAndCache(pm, app.first)
+                            }
+                            onUpdated()
+                        }
+                    }
+                }.onFailure { throwable ->
+                    Logger.e(TAG, "Failed to refresh app icon cache", throwable)
+                    onUpdated()
                 }
             }
         }
@@ -115,8 +134,9 @@ class AppIconCache
             try {
                 val bitmap = pm.getApplicationIcon(packageId).toBitmap(ICON_SIZE_PX, ICON_SIZE_PX)
                 cache[packageId] = bitmap
-            } catch (_: Exception) {
+            } catch (e: Exception) {
                 // App may have been uninstalled or icon unavailable
+                Logger.e(TAG, "Failed to load app icon for $packageId", e)
             }
         }
 
@@ -133,7 +153,10 @@ class AppIconCache
                 .queryIntentActivities(launchIntent, PackageManager.ResolveInfoFlags.of(0))
                 .mapNotNull { resolveInfo ->
                     val pkgName = resolveInfo.activityInfo?.packageName ?: return@mapNotNull null
-                    val label = resolveInfo.loadLabel(pm)?.toString() ?: return@mapNotNull null
+                    val label =
+                        runCatching { resolveInfo.loadLabel(pm)?.toString() }
+                            .getOrNull()
+                            ?: return@mapNotNull null
                     if (label.isBlank() || label == pkgName) return@mapNotNull null
                     pkgName to label
                 }.distinctBy { it.first }
