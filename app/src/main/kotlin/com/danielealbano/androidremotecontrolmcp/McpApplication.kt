@@ -16,10 +16,13 @@ class McpApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        createNotificationChannels()
-        configureOsmdroid()
-        appIconCache.preload()
-        Log.i(TAG, "Application initialized, notification channels created")
+        runCatching { createNotificationChannels() }
+            .onFailure { Log.e(TAG, "Failed to create notification channels", it) }
+        runCatching { configureOsmdroid() }
+            .onFailure { Log.e(TAG, "Failed to configure osmdroid", it) }
+        runCatching { appIconCache.preload() }
+            .onFailure { Log.e(TAG, "Failed to start app icon preload", it) }
+        Log.i(TAG, "Application initialized")
     }
 
     private fun configureOsmdroid() {
