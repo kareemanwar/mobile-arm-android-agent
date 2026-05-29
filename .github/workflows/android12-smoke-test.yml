@@ -74,17 +74,21 @@ jobs:
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 31
-          target: google_apis
+          target: default
           arch: x86_64
-          profile: pixel_6
-          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
+          profile: pixel_2
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
           disable-animations: true
           script: |
             mkdir -p "$GITHUB_WORKSPACE/test-output"
             echo "com.danielealbano.androidremotecontrolmcp.debug" > "$GITHUB_WORKSPACE/test-output/app-id.txt"
+            adb wait-for-device
             adb devices > "$GITHUB_WORKSPACE/test-output/devices.txt"
+            until [ "$(adb shell getprop sys.boot_completed | tr -d '\r')" = "1" ]; do sleep 2; done
+            adb shell input keyevent 82 || true
+            sleep 30
             adb logcat -c || true
-            adb install -r "$GITHUB_WORKSPACE/app/build/outputs/apk/debug/app-debug.apk" > "$GITHUB_WORKSPACE/test-output/install.txt" 2>&1 || (adb logcat -d -v time > "$GITHUB_WORKSPACE/test-output/logs.txt" 2>&1 || true; exit 1)
+            adb install --no-streaming -r "$GITHUB_WORKSPACE/app/build/outputs/apk/debug/app-debug.apk" > "$GITHUB_WORKSPACE/test-output/install.txt" 2>&1 || (adb logcat -d -v time > "$GITHUB_WORKSPACE/test-output/logs.txt" 2>&1 || true; exit 1)
             adb shell monkey -p com.danielealbano.androidremotecontrolmcp.debug -c android.intent.category.LAUNCHER 1 > "$GITHUB_WORKSPACE/test-output/launch.txt" 2>&1 || (adb logcat -d -v time > "$GITHUB_WORKSPACE/test-output/logs.txt" 2>&1 || true; exit 1)
             sleep 15
             adb shell pidof com.danielealbano.androidremotecontrolmcp.debug > "$GITHUB_WORKSPACE/test-output/pid.txt" 2>&1 || (adb logcat -d -v time > "$GITHUB_WORKSPACE/test-output/logs.txt" 2>&1 || true; adb shell dumpsys activity activities > "$GITHUB_WORKSPACE/test-output/activity.txt" 2>&1 || true; exit 1)
