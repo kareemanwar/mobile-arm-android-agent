@@ -69,9 +69,9 @@
         android:theme="@style/Theme.AndroidRemoteControlMcp"
         tools:targetApi="34">
 
-        <!-- Main Activity -->
+        <!-- Safe launcher / diagnostics screen -->
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.DiagnosticsActivity"
             android:exported="true"
             android:theme="@style/Theme.AndroidRemoteControlMcp">
             <intent-filter>
@@ -79,6 +79,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Main Activity -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AndroidRemoteControlMcp" />
 
         <!-- MCP Server Foreground Service -->
         <service
