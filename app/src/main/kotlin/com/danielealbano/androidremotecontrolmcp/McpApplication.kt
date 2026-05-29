@@ -42,12 +42,13 @@ class McpApplication : Application() {
         throwable: Throwable,
     ) {
         val stackTrace =
-            StringWriter().also { writer ->
-                PrintWriter(writer).use { printWriter ->
-                    printWriter.println("Thread: ${thread.name}")
-                    throwable.printStackTrace(printWriter)
-                }
-            }.toString()
+            StringWriter()
+                .also { writer ->
+                    PrintWriter(writer).use { printWriter ->
+                        printWriter.println("Thread: ${thread.name}")
+                        throwable.printStackTrace(printWriter)
+                    }
+                }.toString()
 
         getSharedPreferences(CRASH_PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
