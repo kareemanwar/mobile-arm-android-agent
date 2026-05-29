@@ -80,24 +80,24 @@ jobs:
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back none
           disable-animations: true
           script: |
-            mkdir -p test-output
-            echo "com.danielealbano.androidremotecontrolmcp.debug" > test-output/app-id.txt
-            adb devices > test-output/devices.txt
+            mkdir -p "$GITHUB_WORKSPACE/test-output"
+            echo "com.danielealbano.androidremotecontrolmcp.debug" > "$GITHUB_WORKSPACE/test-output/app-id.txt"
+            adb devices > "$GITHUB_WORKSPACE/test-output/devices.txt"
             adb logcat -c || true
-            adb install -r app/build/outputs/apk/debug/app-debug.apk > test-output/install.txt 2>&1 || (adb logcat -d -v time > test-output/logs.txt 2>&1 || true; exit 1)
-            adb shell monkey -p com.danielealbano.androidremotecontrolmcp.debug -c android.intent.category.LAUNCHER 1 > test-output/launch.txt 2>&1 || (adb logcat -d -v time > test-output/logs.txt 2>&1 || true; exit 1)
+            adb install -r "$GITHUB_WORKSPACE/app/build/outputs/apk/debug/app-debug.apk" > "$GITHUB_WORKSPACE/test-output/install.txt" 2>&1 || (adb logcat -d -v time > "$GITHUB_WORKSPACE/test-output/logs.txt" 2>&1 || true; exit 1)
+            adb shell monkey -p com.danielealbano.androidremotecontrolmcp.debug -c android.intent.category.LAUNCHER 1 > "$GITHUB_WORKSPACE/test-output/launch.txt" 2>&1 || (adb logcat -d -v time > "$GITHUB_WORKSPACE/test-output/logs.txt" 2>&1 || true; exit 1)
             sleep 15
-            adb shell pidof com.danielealbano.androidremotecontrolmcp.debug > test-output/pid.txt 2>&1 || (adb logcat -d -v time > test-output/logs.txt 2>&1 || true; adb shell dumpsys activity activities > test-output/activity.txt 2>&1 || true; exit 1)
-            adb logcat -d -v time > test-output/logs.txt 2>&1 || true
-            adb shell dumpsys activity activities > test-output/activity.txt 2>&1 || true
-            echo "launch_exit=0" > test-output/exit.txt
-            echo "pid_exit=0" >> test-output/exit.txt
+            adb shell pidof com.danielealbano.androidremotecontrolmcp.debug > "$GITHUB_WORKSPACE/test-output/pid.txt" 2>&1 || (adb logcat -d -v time > "$GITHUB_WORKSPACE/test-output/logs.txt" 2>&1 || true; adb shell dumpsys activity activities > "$GITHUB_WORKSPACE/test-output/activity.txt" 2>&1 || true; exit 1)
+            adb logcat -d -v time > "$GITHUB_WORKSPACE/test-output/logs.txt" 2>&1 || true
+            adb shell dumpsys activity activities > "$GITHUB_WORKSPACE/test-output/activity.txt" 2>&1 || true
+            echo "launch_exit=0" > "$GITHUB_WORKSPACE/test-output/exit.txt"
+            echo "pid_exit=0" >> "$GITHUB_WORKSPACE/test-output/exit.txt"
 
       - name: Upload test output
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: android12-smoke-test-output
-          path: test-output/**
+          path: ${{ github.workspace }}/test-output/**
           if-no-files-found: warn
           retention-days: 14
